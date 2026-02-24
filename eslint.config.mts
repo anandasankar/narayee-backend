@@ -34,6 +34,7 @@ export default [
           endOfLine: 'auto',
         },
       ],
+
       'max-len': [
         'error',
         {
@@ -50,6 +51,19 @@ export default [
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-floating-promises': 'error',
       'no-console': 'warn',
+    },
+  },
+
+  {
+    files: ['*.config.js', '*.config.cjs', '*.config.mjs', '.husky/*'],
+
+    languageOptions: {
+      globals: {
+        module: 'readonly',
+        require: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+      },
     },
   },
 ];

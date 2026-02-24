@@ -1,0 +1,39 @@
+#!/bin/sh
+
+echo "Running pre-push checks..."
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+npm run lint || exit 1
+
+npm run typecheck || exit 1
+
+git fetch origin dev
+
+TEMP_BRANCH="tmp_merge_check_$CURRENT_BRANCH"
+
+git checkout -q -b $TEMP_BRANCH
+
+git merge origin/dev --no-commit --no-ff >/dev/null 2>&1
+
+if [ $? -ne 0 ]; then
+
+ echo "Merge conflict detected"
+
+ git reset --hard
+
+ git checkout $CURRENT_BRANCH
+
+ git branch -D $TEMP_BRANCH
+
+ exit 1
+
+fi
+
+git reset --hard
+
+git checkout $CURRENT_BRANCH
+
+git branch -D $TEMP_BRANCH
+
+echo "Push allowed"
