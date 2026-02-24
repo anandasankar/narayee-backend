@@ -1,0 +1,11 @@
+#!/bin/sh
+
+echo "Running pre-commit checks..."
+
+npm run validate:branch || exit 1
+
+npx lint-staged || exit 1
+
+npm run typecheck || exit 1
+
+echo "Pre-commit passed"
