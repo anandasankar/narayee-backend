@@ -1,4 +1,4 @@
-import logger from '../logger/logger';
+import logger from '../logger';
 import { sendResponse } from '../utils/sendResponse';
 import { AppError, errorHandler } from './AppError';
 import { NextFunction, Request, Response } from 'express';

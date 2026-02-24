@@ -5,14 +5,20 @@ import compression from 'compression';
 import hpp from 'hpp';
 import { sendResponse } from './utils/sendResponse';
 import { globalErrorHandler } from './errors/globalErrorHandler';
-import { helmetMiddleware, morganMiddleware, rateLimiter } from './middleware/common.middleware';
-import { requestLogger } from './logger/requestLogger';
+import {
+  helmetMiddleware,
+  morganMiddleware,
+  rateLimiter,
+  requestValidator,
+} from './middleware/common.middleware';
 import { HttpStatusCode } from './types/HttpStatusCode';
+import { commonMessages } from './constants/common.messages';
 
 const app = express();
 
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
 app.use(helmetMiddleware);
-app.use(requestLogger);
 app.use(rateLimiter);
 
 app.use(
@@ -23,21 +29,39 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
-app.use(morganMiddleware);
+
 app.use(hpp());
 app.use(compression());
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('API running');
+const responseBodyMiddleware = (_req: Request, res: Response, next: NextFunction): void => {
+  const originalSend = res.send;
+
+  res.send = function (body: unknown): Response {
+    res.locals.body = body;
+    return originalSend.call(this, body);
+  };
+  next();
+};
+
+app.use(responseBodyMiddleware);
+app.use(morganMiddleware);
+app.use(requestValidator);
+
+app.get('/', (_req: Request, res: Response) => {
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: 'API Running...',
+  });
 });
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  sendResponse(res, {
+app.use((_req: Request, res: Response) => {
+  return sendResponse(res, {
     success: false,
     statusCode: HttpStatusCode.NOT_FOUND,
-    message: 'Route not found',
+    message: commonMessages.ROUTE_NOT_FOUND,
   });
 });
 

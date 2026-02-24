@@ -29,6 +29,9 @@ export default [
         {
           singleQuote: true,
           printWidth: 105,
+          tabWidth: 2,
+          trailingComma: 'all',
+          endOfLine: 'auto',
         },
       ],
       'max-len': [
@@ -44,7 +47,7 @@ export default [
 
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/explicit-function-return-type': 'error',
-      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-floating-promises': 'error',
       'no-console': 'warn',
     },
