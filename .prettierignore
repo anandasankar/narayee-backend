@@ -1,0 +1,43 @@
+# Dependencies
+
+node_modules
+
+# Build output
+
+dist
+build
+coverage
+
+# Logs
+
+log
+logs
+*.log
+
+# Environment files
+
+.env
+.env.*
+
+# TypeScript cache
+
+*.tsbuildinfo
+
+# Editor folders
+
+.vscode
+.idea
+
+# Husky
+
+.husky
+
+# Lock files
+
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Misc
+
+.DS_Store
