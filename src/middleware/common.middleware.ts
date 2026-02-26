@@ -1,6 +1,8 @@
 import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import cors from 'cors';
+import { RequestHandler } from 'express';
 import { sendResponse } from '../utils/sendResponse';
 import { Request, Response, NextFunction } from 'express';
 import logger from '../logger';
@@ -57,4 +59,26 @@ export const requestValidator = (
   } else {
     next();
   }
+};
+
+/**
+ * CORS Options
+ */
+export const corsOptions = (): RequestHandler => {
+  const whitelist = process.env.CORS_ORIGIN_URLS?.split(',') || [];
+
+  return cors({
+    optionsSuccessStatus: 200,
+    credentials: true,
+
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (whitelist.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'), false);
+    },
+  });
 };

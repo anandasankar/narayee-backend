@@ -5,6 +5,7 @@ import hpp from 'hpp';
 import { sendResponse } from './utils/sendResponse';
 import { globalErrorHandler } from './errors/globalErrorHandler';
 import {
+  corsOptions,
   helmetMiddleware,
   morganMiddleware,
   rateLimiter,
@@ -13,7 +14,6 @@ import {
 import { HttpStatusCode } from './types/HttpStatusCode';
 import { commonMessages } from './constants/common.messages';
 import mainRouter from './api/v1/index.router';
-import { corsOptions } from './utils/helper.utils';
 
 const app = express();
 
