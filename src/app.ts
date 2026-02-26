@@ -1,11 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import hpp from 'hpp';
 import { sendResponse } from './utils/sendResponse';
 import { globalErrorHandler } from './errors/globalErrorHandler';
 import {
+  corsOptions,
   helmetMiddleware,
   morganMiddleware,
   rateLimiter,
@@ -13,28 +13,24 @@ import {
 } from './middleware/common.middleware';
 import { HttpStatusCode } from './types/HttpStatusCode';
 import { commonMessages } from './constants/common.messages';
+import mainRouter from './api/v1/index.router';
 
 const app = express();
 
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
+
+app.use(corsOptions());
 app.use(helmetMiddleware);
 app.use(rateLimiter);
-
-app.use(
-  cors({
-    origin: process.env.CORS_URL,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  }),
-);
-
 app.use(hpp());
-app.use(compression());
+
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
+
+app.use(compression());
+app.use(morganMiddleware);
 
 const responseBodyMiddleware = (_req: Request, res: Response, next: NextFunction): void => {
   const originalSend = res.send;
@@ -47,7 +43,6 @@ const responseBodyMiddleware = (_req: Request, res: Response, next: NextFunction
 };
 
 app.use(responseBodyMiddleware);
-app.use(morganMiddleware);
 app.use(requestValidator);
 
 app.get('/', (_req: Request, res: Response) => {
@@ -56,6 +51,8 @@ app.get('/', (_req: Request, res: Response) => {
     message: 'API Running...',
   });
 });
+
+app.use('/api/v1', mainRouter);
 
 app.use((_req: Request, res: Response) => {
   return sendResponse(res, {

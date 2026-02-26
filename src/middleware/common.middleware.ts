@@ -1,10 +1,13 @@
 import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import cors from 'cors';
+import { RequestHandler } from 'express';
 import { sendResponse } from '../utils/sendResponse';
 import { Request, Response, NextFunction } from 'express';
 import logger from '../logger';
 import { commonMessages } from '../constants/common.messages';
+import { HttpStatusCode } from '../types/HttpStatusCode';
 
 const isProduction = process.env.NODE_ENV === 'production';
 export const morganMiddleware = morgan(isProduction ? 'combined' : 'dev');
@@ -21,7 +24,7 @@ export const rateLimiter = rateLimit({
     logger.warn(`Rate limit exceeded: ${req.ip}`);
     sendResponse(res, {
       success: false,
-      statusCode: 429,
+      statusCode: HttpStatusCode.TOO_MANY_REQUESTS,
       message: 'Too many requests',
     });
   },
@@ -35,7 +38,7 @@ export const authRateLimiter = rateLimit({
     logger.warn(`Auth rate limit exceeded: ${req.ip}`);
     sendResponse(res, {
       success: false,
-      statusCode: 429,
+      statusCode: HttpStatusCode.TOO_MANY_REQUESTS,
       message: 'Too many login attempts',
     });
   },
@@ -56,4 +59,26 @@ export const requestValidator = (
   } else {
     next();
   }
+};
+
+/**
+ * CORS Options
+ */
+export const corsOptions = (): RequestHandler => {
+  const whitelist = process.env.CORS_ORIGIN_URLS?.split(',') || [];
+
+  return cors({
+    optionsSuccessStatus: 200,
+    credentials: true,
+
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (whitelist.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'), false);
+    },
+  });
 };
