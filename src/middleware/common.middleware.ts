@@ -5,6 +5,7 @@ import { sendResponse } from '../utils/sendResponse';
 import { Request, Response, NextFunction } from 'express';
 import logger from '../logger';
 import { commonMessages } from '../constants/common.messages';
+import { HttpStatusCode } from '../types/HttpStatusCode';
 
 const isProduction = process.env.NODE_ENV === 'production';
 export const morganMiddleware = morgan(isProduction ? 'combined' : 'dev');
@@ -21,7 +22,7 @@ export const rateLimiter = rateLimit({
     logger.warn(`Rate limit exceeded: ${req.ip}`);
     sendResponse(res, {
       success: false,
-      statusCode: 429,
+      statusCode: HttpStatusCode.TOO_MANY_REQUESTS,
       message: 'Too many requests',
     });
   },
@@ -35,7 +36,7 @@ export const authRateLimiter = rateLimit({
     logger.warn(`Auth rate limit exceeded: ${req.ip}`);
     sendResponse(res, {
       success: false,
-      statusCode: 429,
+      statusCode: HttpStatusCode.TOO_MANY_REQUESTS,
       message: 'Too many login attempts',
     });
   },

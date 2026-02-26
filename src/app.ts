@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import hpp from 'hpp';
@@ -14,28 +13,24 @@ import {
 import { HttpStatusCode } from './types/HttpStatusCode';
 import { commonMessages } from './constants/common.messages';
 import mainRouter from './api/v1/index.router';
+import { corsOptions } from './utils/helper.utils';
 
 const app = express();
 
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
+
+app.use(corsOptions());
 app.use(helmetMiddleware);
 app.use(rateLimiter);
-
-app.use(
-  cors({
-    origin: process.env.CORS_URL,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  }),
-);
-
 app.use(hpp());
-app.use(compression());
+
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
+
+app.use(compression());
+app.use(morganMiddleware);
 
 const responseBodyMiddleware = (_req: Request, res: Response, next: NextFunction): void => {
   const originalSend = res.send;
@@ -48,7 +43,6 @@ const responseBodyMiddleware = (_req: Request, res: Response, next: NextFunction
 };
 
 app.use(responseBodyMiddleware);
-app.use(morganMiddleware);
 app.use(requestValidator);
 
 app.get('/', (_req: Request, res: Response) => {
