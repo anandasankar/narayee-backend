@@ -13,6 +13,7 @@ import {
 } from './middleware/common.middleware';
 import { HttpStatusCode } from './types/HttpStatusCode';
 import { commonMessages } from './constants/common.messages';
+import mainRouter from './api/v1/index.router';
 
 const app = express();
 
@@ -56,6 +57,8 @@ app.get('/', (_req: Request, res: Response) => {
     message: 'API Running...',
   });
 });
+
+app.use('/api/v1', mainRouter);
 
 app.use((_req: Request, res: Response) => {
   return sendResponse(res, {
