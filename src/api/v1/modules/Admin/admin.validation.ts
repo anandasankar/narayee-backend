@@ -1,0 +1,101 @@
+import { z } from 'zod';
+import { limitValidation, pageNoValidation } from '../../../../utils/common.validation';
+
+export const requiredString = (field: string, max = 25): z.ZodType<string> =>
+  z
+    .string()
+    .optional()
+    .transform((val) => val?.trim() ?? '')
+    .refine((val) => val.length > 0, {
+      message: `${field} is required`,
+    })
+    .refine((val) => val.length <= max, {
+      message: `${field} must be less than ${max} characters`,
+    }) as z.ZodType<string>;
+
+export const createAdminSchema = z.object({
+  body: z.object({
+    firstName: requiredString('First name'),
+    middleName: z.string().trim().max(25, 'Middle name must be less than 25 characters').optional(),
+    lastName: requiredString('Last name'),
+    email: z
+      .string()
+      .optional()
+      .transform((val) => val?.trim())
+      .refine((val) => val !== undefined && val !== '', {
+        message: 'Email is required',
+      })
+      .refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val!), {
+        message: 'Invalid email address',
+      }),
+
+    mobileNumber: z
+      .string()
+      .regex(/^[6-9]\d{9}$/, 'Invalid mobile number')
+      .optional(),
+
+    password: z
+      .string()
+      .optional()
+      .refine((val) => val !== undefined && val !== '', {
+        message: 'Password is required',
+      })
+      .refine((val) => val!.length >= 6, {
+        message: 'Password must be at least 6 characters',
+      })
+      .refine((val) => val!.length <= 25, {
+        message: 'Password too long',
+      })
+      .refine((val) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#^()_\-+=])/.test(val!), {
+        message: 'Password must contain uppercase, lowercase, number, special character',
+      }),
+  }),
+});
+
+export const updateAdminSchema = z.object({
+  params: z.object({
+    id: z.string().cuid('Invalid Admin ID format'),
+  }),
+
+  body: z
+    .object({
+      firstName: z
+        .string()
+        .min(1, 'First name cannot be empty')
+        .max(25, 'First name must be less than 25 characters')
+        .optional(),
+
+      middleName: z.string().max(25, 'Middle name must be less than 25 characters').optional(),
+
+      lastName: z
+        .string()
+        .min(1, 'Last name cannot be empty')
+        .max(25, 'Last name must be less than 25 characters')
+        .optional(),
+
+      email: z.string().email('Invalid email address').optional(),
+
+      mobileNumber: z
+        .string()
+        .regex(/^[6-9]\d{9}$/, 'Invalid mobile number')
+        .optional(),
+    })
+    .refine((data) => Object.keys(data).length > 0, {
+      message: 'At least one field must be provided to update',
+    }),
+});
+
+export const getAllAdminSchema = z.object({
+  query: z
+    .object({
+      pageNo: pageNoValidation,
+      limit: limitValidation,
+    })
+    .strict(),
+});
+
+export const adminByIdSchema = z.object({
+  params: z.object({
+    id: z.string().cuid('Invalid Admin ID format'),
+  }),
+});

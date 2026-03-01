@@ -14,6 +14,7 @@ export interface UpdateAdminDTO {
   mobileNumber?: string;
 }
 export interface GetAdminDTO {
+  id: string;
   firstName: string;
   middleName?: string | null;
   lastName: string;
