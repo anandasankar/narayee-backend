@@ -3,6 +3,5 @@ node_modules/
 logs/
 dist/
 *.log
-.vscode/
 *.tsbuildinfo
 /src/generated/prisma
