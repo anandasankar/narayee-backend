@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import cors from 'cors';
 import { RequestHandler } from 'express';
-import { sendResponse } from '../utils/sendResponse';
+import { sendResponse } from '../utils/send.response';
 import { Request, Response, NextFunction } from 'express';
 import logger from '../logger';
 import { commonMessages } from '../constants/common.messages';

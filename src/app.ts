@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import hpp from 'hpp';
-import { sendResponse } from './utils/sendResponse';
+import { sendResponse } from './utils/send.response';
 import { globalErrorHandler } from './errors/globalErrorHandler';
 import {
   corsOptions,

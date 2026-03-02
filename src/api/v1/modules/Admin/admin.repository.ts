@@ -1,5 +1,7 @@
-import prisma from '../../../../config/db';
+import { Admin, Prisma } from '@prisma/client';
+import { paginationMethod } from '../../../../utils/helper.utils';
 import { CreateAdminDTO, GetAdminDTO, UpdateAdminDTO } from './admin.interface';
+import { prisma } from '../../../../lib/prisma';
 
 class AdminRepository {
   async createAdmin(data: CreateAdminDTO): Promise<void> {
@@ -11,6 +13,56 @@ class AdminRepository {
         email: data.email,
         mobileNumber: data.mobileNumber,
         password: data.password,
+      },
+    });
+  }
+
+  async findDuplicateAdmin(
+    email?: string,
+    mobileNumber?: string,
+    excludeId?: string,
+  ): Promise<Admin | null> {
+    const orConditions: Prisma.AdminWhereInput[] = [];
+
+    if (email) {
+      orConditions.push({
+        email: {
+          equals: email,
+          mode: 'insensitive',
+        },
+      });
+    }
+
+    if (mobileNumber) {
+      orConditions.push({
+        mobileNumber: mobileNumber,
+      });
+    }
+
+    if (orConditions.length === 0) {
+      return null;
+    }
+
+    const whereClause: Prisma.AdminWhereInput = {
+      deleted: false,
+      OR: orConditions,
+    };
+
+    if (excludeId) {
+      whereClause.id = {
+        not: excludeId,
+      };
+    }
+
+    return await prisma.admin.findFirst({
+      where: whereClause,
+    });
+  }
+
+  async getAdmin(): Promise<Admin | null> {
+    return await prisma.admin.findFirst({
+      where: {
+        deleted: false,
       },
     });
   }
@@ -29,6 +81,7 @@ class AdminRepository {
         deleted: false,
       },
       select: {
+        id: true,
         firstName: true,
         middleName: true,
         lastName: true,
@@ -40,6 +93,54 @@ class AdminRepository {
     if (!admin) return null;
 
     return admin;
+  }
+
+  async getAllAdmin({
+    paginationData,
+  }: {
+    paginationData: {
+      pageNo: number;
+      limit: number;
+    };
+  }): Promise<{ count: number; result: GetAdminDTO[] }> {
+    const pagination = paginationMethod(Number(paginationData.pageNo), Number(paginationData.limit));
+    const whereClause: Prisma.AdminWhereInput = {
+      deleted: false,
+    };
+
+    const [admins, count] = await prisma.$transaction([
+      prisma.admin.findMany({
+        where: whereClause,
+        skip: pagination.skip,
+        take: pagination.take,
+        select: {
+          id: true,
+          firstName: true,
+          middleName: true,
+          lastName: true,
+          email: true,
+          mobileNumber: true,
+        },
+      }),
+      prisma.admin.count({
+        where: whereClause,
+      }),
+    ]);
+
+    return {
+      count,
+      result: admins,
+    };
+  }
+
+  async deleteAdmin(id: string): Promise<void> {
+    await prisma.admin.update({
+      where: { id },
+      data: {
+        deleted: true,
+        active: false,
+      },
+    });
   }
 }
 
