@@ -3,7 +3,7 @@ import { isAdmin, isAuthenticated } from '../../../../middleware/auth.middleware
 import validateRequest from '../../../../middleware/validate.request';
 import { adminController } from './admin.controller';
 import {
-  adminByIdSchema,
+  changePasswordSchema,
   createAdminSchema,
   getAllAdminSchema,
   loginAdminSchema,
@@ -15,9 +15,8 @@ const adminRouter = Router();
 adminRouter.post('/create', validateRequest(createAdminSchema), adminController.createAdmin);
 
 adminRouter.put(
-  '/update/:id',
+  '/update',
   isAuthenticated,
-  isAdmin,
   validateRequest(updateAdminSchema),
   adminController.updateAdmin,
 );
@@ -32,15 +31,19 @@ adminRouter.get(
 
 adminRouter.get('/profile/me', isAuthenticated, isAdmin, adminController.getAdminById);
 
-adminRouter.delete(
-  '/delete/:id',
-  isAuthenticated,
-  isAdmin,
-  validateRequest(adminByIdSchema),
-  adminController.deleteAdmin,
-);
+adminRouter.delete('/delete', isAuthenticated, adminController.deleteAdmin);
 
 adminRouter.post('/login', validateRequest(loginAdminSchema), adminController.loginAdmin);
 adminRouter.post('/logout', isAuthenticated, adminController.logoutAdmin);
+
+adminRouter.post(
+  '/change-password',
+  isAuthenticated,
+  validateRequest(changePasswordSchema),
+  adminController.changePassword,
+);
+
+//TODO: Forgot Password API(send email otp)
+//TODO: Google Login API
 
 export default adminRouter;

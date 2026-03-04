@@ -12,6 +12,9 @@ export interface UpdateAdminDTO {
   lastName?: string;
   email?: string;
   mobileNumber?: string;
+  password?: string;
+  active?: boolean;
+  deleted?: boolean;
 }
 export interface GetAdminDTO {
   id: string;

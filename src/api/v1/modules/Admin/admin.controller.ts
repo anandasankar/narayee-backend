@@ -29,8 +29,8 @@ class AdminController {
   }
 
   async updateAdmin(req: Request, res: Response): Promise<void> {
-    const id = req.params.id as string;
-    await adminService.updateAdmin(id, req.body);
+    const adminId = req.user!.id;
+    await adminService.updateAdmin(adminId, req.body);
 
     sendResponse(res, {
       success: true,
@@ -56,9 +56,8 @@ class AdminController {
   }
 
   async deleteAdmin(req: Request, res: Response): Promise<void> {
-    const id = req.params.id as string;
-
-    await adminService.deleteAdmin(id);
+    const adminId = req.user!.id;
+    await adminService.deleteAdmin(adminId);
 
     clearAuthCookies(res);
 
@@ -88,6 +87,20 @@ class AdminController {
       success: true,
       statusCode: HttpStatusCode.OK,
       message: adminMessage.ADMIN_LOGOUT_SUCCESS,
+    });
+  }
+
+  async changePassword(req: Request, res: Response): Promise<void> {
+    const adminId = req.user!.id;
+
+    const { currentPassword, newPassword } = req.body;
+
+    await adminService.changePassword(adminId, currentPassword, newPassword);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: HttpStatusCode.OK,
+      message: adminMessage.PASSWORD_CHANGED_SUCCESSFULLY,
     });
   }
 }

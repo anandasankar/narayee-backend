@@ -16,7 +16,7 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 export const generateAccessToken = (id: string, email: string): string => {
   return jwt.sign({ id, email }, SECRET_KEY, {
-    expiresIn: '15m',
+    expiresIn: '1d',
     algorithm: 'HS256',
   });
 };
