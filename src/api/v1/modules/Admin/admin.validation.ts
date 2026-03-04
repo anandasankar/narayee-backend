@@ -27,7 +27,8 @@ export const createAdminSchema = z.object({
 
       mobileNumber: z
         .string()
-        .regex(/^[6-9]\d{9}$/, 'Invalid mobile number')
+        .trim()
+        .regex(/^(\+91)?[6-9]\d{9}$/, 'Invalid mobile number')
         .optional(),
 
       password: z
@@ -50,10 +51,6 @@ export const createAdminSchema = z.object({
 });
 
 export const updateAdminSchema = z.object({
-  params: z.object({
-    id: z.string().cuid('Invalid Admin ID format'),
-  }),
-
   body: z
     .object({
       firstName: z
@@ -74,7 +71,8 @@ export const updateAdminSchema = z.object({
 
       mobileNumber: z
         .string()
-        .regex(/^[6-9]\d{9}$/, 'Invalid mobile number')
+        .trim()
+        .regex(/^(\+91)?[6-9]\d{9}$/, 'Invalid mobile number')
         .optional(),
     })
     .refine((data) => Object.keys(data).length > 0, {
@@ -92,12 +90,6 @@ export const getAllAdminSchema = z.object({
     .strict(),
 });
 
-export const adminByIdSchema = z.object({
-  params: z.object({
-    id: z.string().cuid('Invalid Admin ID format'),
-  }),
-});
-
 export const loginAdminSchema = z.object({
   body: z
     .object({
@@ -111,6 +103,27 @@ export const loginAdminSchema = z.object({
         .string()
         .min(1, { message: 'Password is required' })
         .min(6, { message: 'Password must be at least 6 characters' }),
+    })
+    .strict(),
+});
+
+export const changePasswordSchema = z.object({
+  body: z
+    .object({
+      currentPassword: z.string().min(1, 'Current password is required'),
+
+      newPassword: z
+        .string()
+        .min(6, 'Password must be at least 6 characters')
+        .max(25, 'Password too long')
+        .regex(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#^()_\-+=])/,
+          'Password must contain uppercase, lowercase, number, special character',
+        ),
+    })
+    .refine((data) => data.currentPassword !== data.newPassword, {
+      message: 'New password cannot be the same as the current password',
+      path: ['newPassword'],
     })
     .strict(),
 });

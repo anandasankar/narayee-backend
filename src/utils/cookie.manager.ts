@@ -1,6 +1,7 @@
 import { Response } from 'express';
 
 const isProduction = process.env.NODE_ENV === 'production';
+const COOKIE_TTL = 24 * 60 * 60 * 1000;
 
 export const setAuthCookies = (res: Response, accessToken: string): void => {
   res.cookie('accessToken', accessToken, {
@@ -8,7 +9,7 @@ export const setAuthCookies = (res: Response, accessToken: string): void => {
     secure: isProduction,
     sameSite: isProduction ? 'none' : 'lax',
     domain: process.env.AUTH_COOKIE_DOMAIN,
-    maxAge: 15 * 60 * 1000,
+    maxAge: COOKIE_TTL,
   });
 };
 

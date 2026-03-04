@@ -9,12 +9,35 @@ import { adminRepository } from './admin.repository';
 
 class AdminService {
   async createAdmin(data: CreateAdminDTO): Promise<void> {
-    const existingAdmin = await adminRepository.getAdmin();
-    if (existingAdmin) {
+    const activeAdmin = await adminRepository.getAdmin();
+
+    if (activeAdmin) {
       throw new AppError(HttpStatusCode.CONFLICT, adminMessage.ADMIN_ALREADY_EXISTS, false);
     }
 
+    const existingAdmin = await adminRepository.findConflictingAdmin(data.email, data.mobileNumber);
+
     const hashedPassword = await hashPassword(data.password);
+
+    if (existingAdmin) {
+      if (existingAdmin.deleted) {
+        await adminRepository.updateAdmin(existingAdmin.id, {
+          firstName: data.firstName,
+          middleName: data.middleName,
+          lastName: data.lastName,
+          email: data.email,
+          mobileNumber: data.mobileNumber,
+          password: hashedPassword,
+          deleted: false,
+          active: true,
+        });
+
+        return;
+      }
+
+      throw new AppError(HttpStatusCode.CONFLICT, adminMessage.ADMIN_ALREADY_EXISTS, false);
+    }
+
     await adminRepository.createAdmin({
       firstName: data.firstName,
       middleName: data.middleName,
@@ -24,19 +47,31 @@ class AdminService {
       password: hashedPassword,
     });
   }
-
   async getAdminById(id: string): Promise<GetAdminDTO | null> {
     const admin = await adminRepository.getAdminById(id);
     if (!admin) {
-      throw new AppError(HttpStatusCode.CONFLICT, adminMessage.ADMIN_NOT_FOUND, false);
+      throw new AppError(HttpStatusCode.NOT_FOUND, adminMessage.ADMIN_NOT_FOUND, false);
     }
-    return admin;
+    const adminDTO: GetAdminDTO = {
+      id: admin.id,
+      firstName: admin.firstName,
+      middleName: admin.middleName,
+      lastName: admin.lastName,
+      email: admin.email,
+      mobileNumber: admin.mobileNumber,
+    };
+
+    return adminDTO;
   }
 
   async updateAdmin(id: string, data: UpdateAdminDTO): Promise<void> {
     await this.getAdminById(id);
     if (data.email || data.mobileNumber) {
-      const conflictAdmin = await adminRepository.findDuplicateAdmin(data.email, data.mobileNumber, id);
+      const conflictAdmin = await adminRepository.findConflictingAdmin(
+        data.email,
+        data.mobileNumber,
+        id,
+      );
 
       if (conflictAdmin) {
         throw new AppError(
@@ -86,6 +121,26 @@ class AdminService {
     const accessToken = generateAccessToken(admin.id, admin.email);
 
     return accessToken;
+  }
+
+  async changePassword(adminId: string, currentPassword: string, newPassword: string): Promise<void> {
+    const admin = await adminRepository.getAdminById(adminId);
+
+    if (!admin || admin.deleted) {
+      throw new AppError(HttpStatusCode.NOT_FOUND, adminMessage.ADMIN_NOT_FOUND, false);
+    }
+
+    const isPasswordValid = await verifyPassword(currentPassword, admin.password);
+
+    if (!isPasswordValid) {
+      throw new AppError(HttpStatusCode.UNAUTHORIZED, adminMessage.INVALID_CURRENT_PASSWORD, false);
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    await adminRepository.updateAdmin(adminId, {
+      password: hashedPassword,
+    });
   }
 }
 

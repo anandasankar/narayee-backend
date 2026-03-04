@@ -17,7 +17,7 @@ class AdminRepository {
     });
   }
 
-  async findDuplicateAdmin(
+  async findConflictingAdmin(
     email?: string,
     mobileNumber?: string,
     excludeId?: string,
@@ -44,7 +44,6 @@ class AdminRepository {
     }
 
     const whereClause: Prisma.AdminWhereInput = {
-      deleted: false,
       OR: orConditions,
     };
 
@@ -74,19 +73,11 @@ class AdminRepository {
     });
   }
 
-  async getAdminById(id: string): Promise<GetAdminDTO | null> {
+  async getAdminById(id: string): Promise<Admin | null> {
     const admin = await prisma.admin.findFirst({
       where: {
         id,
         deleted: false,
-      },
-      select: {
-        id: true,
-        firstName: true,
-        middleName: true,
-        lastName: true,
-        email: true,
-        mobileNumber: true,
       },
     });
 
