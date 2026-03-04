@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response, RequestHandler } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { ZodError, ZodType } from 'zod';
-import { sendResponse } from '../utils/send.response';
-import logger from '../logger';
-import { AppError, errorHandler } from '../errors/AppError';
-import { HttpStatusCode } from '../types/HttpStatusCode';
 import { commonMessages } from '../constants/common.messages';
+import { AppError, errorHandler } from '../errors/AppError';
+import logger from '../logger';
 import { RequestSchema } from '../types/common.type';
+import { HttpStatusCode } from '../types/HttpStatusCode';
+import { sendResponse } from '../utils/send.response';
 
 const validateRequest =
   (schema: ZodType<RequestSchema>): RequestHandler =>
@@ -22,11 +22,11 @@ const validateRequest =
       }
 
       if (parsedData.query !== undefined) {
-        req.query = parsedData.query as Request['query'];
+        Object.assign(req.query, parsedData.query);
       }
 
       if (parsedData.params !== undefined) {
-        req.params = parsedData.params as Request['params'];
+        Object.assign(req.params, parsedData.params);
       }
 
       return next();

@@ -6,5 +6,7 @@ export const adminMessage = {
   ADMIN_UPDATED: 'Admin updated successfully',
   ADMIN_DELETED: 'Admin deleted successfully',
   ADMIN_LOGIN_SUCCESS: 'Admin login successful',
-  ADMIN_INVALID_CREDENTIALS: 'Invalid email or password',
+  ADMIN_LOGOUT_SUCCESS: 'Admin logout successful',
+  INVALID_CREDENTIALS: 'Incorrect email or password',
+  ADMIN_EMAIL_OR_MOBILE_ALREADY_EXISTS: 'Email or mobile number already exists',
 };
