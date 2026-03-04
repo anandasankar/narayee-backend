@@ -1,7 +1,7 @@
 import { Admin, Prisma } from '@prisma/client';
+import { prisma } from '../../../../lib/prisma';
 import { paginationMethod } from '../../../../utils/helper.utils';
 import { CreateAdminDTO, GetAdminDTO, UpdateAdminDTO } from './admin.interface';
-import { prisma } from '../../../../lib/prisma';
 
 class AdminRepository {
   async createAdmin(data: CreateAdminDTO): Promise<void> {
@@ -139,6 +139,18 @@ class AdminRepository {
       data: {
         deleted: true,
         active: false,
+      },
+    });
+  }
+
+  async getAdminByEmail(email: string): Promise<Admin | null> {
+    return prisma.admin.findFirst({
+      where: {
+        email: {
+          equals: email,
+          mode: 'insensitive',
+        },
+        deleted: false,
       },
     });
   }

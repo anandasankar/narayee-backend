@@ -5,4 +5,6 @@ export const commonMessages = {
   INVALID_REQUEST_DATA: 'Invalid request data',
   TOO_MANY_REQUESTS: 'Too many requests',
   TOO_MANY_LOGIN: 'Too many login attempts',
+  TOKEN_REQUIRE: 'Access Token Required',
+  UNAUTHORIZED: 'Unauthorized user',
 };

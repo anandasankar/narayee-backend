@@ -1,7 +1,8 @@
 import { AppError } from '../../../../errors/AppError';
 import { UnparsedFilterObject } from '../../../../types/common.type';
 import { HttpStatusCode } from '../../../../types/HttpStatusCode';
-import { hashPassword } from '../../../../utils/password.manager';
+import { hashPassword, verifyPassword } from '../../../../utils/password.manager';
+import { generateAccessToken } from '../../../../utils/token.manager';
 import { CreateAdminDTO, GetAdminDTO, UpdateAdminDTO } from './admin.interface';
 import { adminMessage } from './admin.message';
 import { adminRepository } from './admin.repository';
@@ -35,10 +36,14 @@ class AdminService {
   async updateAdmin(id: string, data: UpdateAdminDTO): Promise<void> {
     await this.getAdminById(id);
     if (data.email || data.mobileNumber) {
-      const duplicate = await adminRepository.findDuplicateAdmin(data.email, data.mobileNumber, id);
+      const conflictAdmin = await adminRepository.findDuplicateAdmin(data.email, data.mobileNumber, id);
 
-      if (duplicate) {
-        throw new AppError(HttpStatusCode.CONFLICT, adminMessage.ADMIN_ALREADY_EXISTS, false);
+      if (conflictAdmin) {
+        throw new AppError(
+          HttpStatusCode.CONFLICT,
+          adminMessage.ADMIN_EMAIL_OR_MOBILE_ALREADY_EXISTS,
+          false,
+        );
       }
     }
     await adminRepository.updateAdmin(id, data);
@@ -63,6 +68,24 @@ class AdminService {
   async deleteAdmin(id: string): Promise<void> {
     await this.getAdminById(id);
     await adminRepository.deleteAdmin(id);
+  }
+
+  async loginAdmin(email: string, password: string): Promise<string> {
+    const admin = await adminRepository.getAdminByEmail(email);
+
+    if (!admin) {
+      throw new AppError(HttpStatusCode.UNAUTHORIZED, adminMessage.INVALID_CREDENTIALS, false);
+    }
+
+    const isPasswordValid = await verifyPassword(password, admin.password);
+
+    if (!isPasswordValid) {
+      throw new AppError(HttpStatusCode.UNAUTHORIZED, adminMessage.INVALID_CREDENTIALS, false);
+    }
+
+    const accessToken = generateAccessToken(admin.id, admin.email);
+
+    return accessToken;
   }
 }
 
