@@ -1,0 +1,183 @@
+paths:
+  /admin/login:
+    post:
+      tags:
+        - Admin Auth
+      summary: Admin Login
+      description: Authenticates an admin and sets an HTTP-only accessToken cookie.
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: admin@example.com
+
+                password:
+                  type: string
+                  minLength: 6
+                  example: Admin@123
+
+      responses:
+        '200':
+          description: Admin login successful
+          headers:
+            Set-Cookie:
+              description: HTTP-only authentication cookie
+              schema:
+                type: string
+                example: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 200
+
+                  message:
+                    type: string
+                    example: Admin logged in successfully
+
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 400
+
+                  message:
+                    type: string
+                    example: Email is invalid
+
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 401
+
+                  message:
+                    type: string
+                    example: Invalid email or password
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong
+
+  /admin/logout:
+    post:
+      tags:
+        - Admin Auth
+      summary: Admin Logout
+      description: Logs out the authenticated admin by clearing the authentication cookie.
+
+      responses:
+        '200':
+          description: Admin logout successful
+          headers:
+            Set-Cookie:
+              description: Clears authentication cookie
+              schema:
+                type: string
+                example: accessToken=; Max-Age=0
+
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 200
+
+                  message:
+                    type: string
+                    example: Admin logged out successfully
+
+        '401':
+          description: Unauthorized (admin not authenticated)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 401
+
+                  message:
+                    type: string
+                    example: Unauthorized
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong

@@ -1,8 +1,10 @@
-import express, { Request, Response, NextFunction } from 'express';
-import cookieParser from 'cookie-parser';
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import express, { NextFunction, Request, Response } from 'express';
 import hpp from 'hpp';
-import { sendResponse } from './utils/send.response';
+import swaggerUi from 'swagger-ui-express';
+import mainRouter from './api/v1/modules/index.router';
+import { commonMessages } from './constants/common.messages';
 import { globalErrorHandler } from './errors/globalErrorHandler';
 import {
   corsOptions,
@@ -11,9 +13,9 @@ import {
   rateLimiter,
   requestValidator,
 } from './middleware/common.middleware';
+import { loadAndMergeSwaggerSpecs, swaggerOptions } from './swagger/loader';
 import { HttpStatusCode } from './types/HttpStatusCode';
-import { commonMessages } from './constants/common.messages';
-import mainRouter from './api/v1/index.router';
+import { sendResponse } from './utils/send.response';
 
 const app = express();
 
@@ -44,6 +46,9 @@ const responseBodyMiddleware = (_req: Request, res: Response, next: NextFunction
 
 app.use(responseBodyMiddleware);
 app.use(requestValidator);
+
+const swaggerSpec = loadAndMergeSwaggerSpecs();
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerOptions));
 
 app.get('/', (_req: Request, res: Response) => {
   res.status(HttpStatusCode.OK).json({

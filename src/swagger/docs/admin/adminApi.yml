@@ -1,0 +1,784 @@
+paths:
+  /admin/create:
+    post:
+      tags:
+        - Admin
+      summary: Create Admin
+      description: Creates a new admin account. Only one active admin is allowed.
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - email
+                - password
+              properties:
+                firstName:
+                  type: string
+                  maxLength: 25
+                  example: Anand
+
+                middleName:
+                  type: string
+                  maxLength: 25
+                  example: Kumar
+
+                lastName:
+                  type: string
+                  maxLength: 25
+                  example: Sharma
+
+                email:
+                  type: string
+                  format: email
+                  example: admin@example.com
+
+                mobileNumber:
+                  type: string
+                  example: '+919876543210'
+
+                password:
+                  type: string
+                  minLength: 6
+                  maxLength: 25
+                  example: Admin@123
+
+      responses:
+        '201':
+          description: Admin created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 201
+
+                  message:
+                    type: string
+                    example: Admin created successfully
+
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 409
+
+                  message:
+                    type: string
+                    example: Email address is require
+
+        '409':
+          description: Admin already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 409
+
+                  message:
+                    type: string
+                    example: Admin already exists
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong
+
+  /admin/update:
+    put:
+      tags:
+        - Admin
+      summary: Update Admin
+      description: Updates the authenticated admin profile. At least one field must be provided.
+
+      security:
+        - cookieAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                firstName:
+                  type: string
+                  maxLength: 25
+                  example: Anand
+
+                middleName:
+                  type: string
+                  maxLength: 25
+                  example: Kumar
+
+                lastName:
+                  type: string
+                  maxLength: 25
+                  example: Sharma
+
+                email:
+                  type: string
+                  format: email
+                  example: admin@example.com
+
+                mobileNumber:
+                  type: string
+                  example: '+919876543210'
+
+      responses:
+        '200':
+          description: Admin updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 200
+
+                  message:
+                    type: string
+                    example: Admin updated successfully
+
+        '400':
+          description: Validation error or empty update request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 400
+
+                  message:
+                    type: string
+                    example: At least one field must be provided to update
+
+        '401':
+          description: Unauthorized (not authenticated)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 401
+
+                  message:
+                    type: string
+                    example: Unauthorized
+
+        '409':
+          description: Email or mobile number already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 409
+
+                  message:
+                    type: string
+                    example: Email or mobile number already exists
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong
+
+  /admin/get-all:
+    get:
+      tags:
+        - Admin
+      summary: Get All Admins
+      description: Fetches a paginated list of all admins. Only accessible by authenticated admin users.
+
+      security:
+        - cookieAuth: []
+
+      parameters:
+        - name: pageNo
+          in: query
+          required: true
+          description: Page number for pagination
+          schema:
+            type: integer
+            example: 1
+
+        - name: limit
+          in: query
+          required: true
+          description: Number of records per page
+          schema:
+            type: integer
+            example: 10
+
+      responses:
+        '200':
+          description: Admins fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 200
+
+                  message:
+                    type: string
+                    example: Admin fetched successfully
+
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 25
+
+                      pageNo:
+                        type: integer
+                        example: 1
+
+                      limit:
+                        type: integer
+                        example: 10
+
+                      admins:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: '64f4c92c3e0a2f1a4a8a3b1c'
+
+                            firstName:
+                              type: string
+                              example: Anand
+
+                            middleName:
+                              type: string
+                              example: Kumar
+
+                            lastName:
+                              type: string
+                              example: Sharma
+
+                            email:
+                              type: string
+                              example: admin@example.com
+
+                            mobileNumber:
+                              type: string
+                              example: '+919876543210'
+
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 400
+
+                  message:
+                    type: string
+                    example: Invalid query parameters
+
+        '401':
+          description: Unauthorized (not authenticated)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 401
+
+                  message:
+                    type: string
+                    example: Unauthorized
+
+        '403':
+          description: Forbidden (not an admin)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 403
+
+                  message:
+                    type: string
+                    example: Access denied
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong
+
+  /admin/profile/me:
+    get:
+      tags:
+        - Admin
+      summary: Get Admin Profile
+      description: Retrieves the profile details of the currently authenticated admin.
+
+      security:
+        - cookieAuth: []
+
+      responses:
+        '200':
+          description: Admin fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 200
+
+                  message:
+                    type: string
+                    example: Admin fetched successfully
+
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: '64f4c92c3e0a2f1a4a8a3b1c'
+
+                      firstName:
+                        type: string
+                        example: Anand
+
+                      middleName:
+                        type: string
+                        example: Kumar
+
+                      lastName:
+                        type: string
+                        example: Sharma
+
+                      email:
+                        type: string
+                        example: admin@example.com
+
+                      mobileNumber:
+                        type: string
+                        example: '+919876543210'
+
+        '401':
+          description: Unauthorized (not authenticated)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 401
+
+                  message:
+                    type: string
+                    example: Unauthorized
+
+        '403':
+          description: Forbidden (not an admin)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 403
+
+                  message:
+                    type: string
+                    example: Access denied
+
+        '404':
+          description: Admin not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 404
+
+                  message:
+                    type: string
+                    example: Admin not found
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong
+
+  /admin/delete:
+    delete:
+      tags:
+        - Admin
+      summary: Delete Admin
+      description: Deletes the currently authenticated admin account and clears authentication cookies.
+
+      security:
+        - cookieAuth: []
+
+      responses:
+        '200':
+          description: Admin deleted successfully
+          headers:
+            Set-Cookie:
+              description: Clears the authentication cookie
+              schema:
+                type: string
+                example: accessToken=; Max-Age=0
+
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 200
+
+                  message:
+                    type: string
+                    example: Admin deleted successfully
+
+        '401':
+          description: Unauthorized (not authenticated)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 401
+
+                  message:
+                    type: string
+                    example: Unauthorized
+
+        '404':
+          description: Admin not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 404
+
+                  message:
+                    type: string
+                    example: Admin not found
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong
+
+  /admin/change-password:
+    post:
+      tags:
+        - Admin
+      summary: Change Admin Password
+      description: Allows the authenticated admin to change their password.
+
+      security:
+        - cookieAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentPassword
+                - newPassword
+              properties:
+                currentPassword:
+                  type: string
+                  example: Admin@123
+
+                newPassword:
+                  type: string
+                  minLength: 6
+                  maxLength: 25
+                  example: NewAdmin@123
+
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 200
+
+                  message:
+                    type: string
+                    example: Password changed successfully
+
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 400
+
+                  message:
+                    type: string
+                    example: New password cannot be the same as the current password
+
+        '401':
+          description: Invalid current password or unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 401
+
+                  message:
+                    type: string
+                    example: Invalid current password
+
+        '404':
+          description: Admin not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 404
+
+                  message:
+                    type: string
+                    example: Admin not found
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong
