@@ -1,21 +1,22 @@
-import { commonMessages } from '../../../../constants/common.messages';
-import { AppError } from '../../../../errors/AppError';
-import { UnparsedFilterObject } from '../../../../types/common.type';
-import { HttpStatusCode } from '../../../../types/HttpStatusCode';
-import { hashPassword, verifyPassword } from '../../../../utils/password.manager';
+import { commonMessages } from '../../../../../constants/common.messages';
+import { AppError } from '../../../../../errors/AppError';
+import { UnparsedFilterObject } from '../../../../../types/common.type';
+import { HttpStatusCode } from '../../../../../types/HttpStatusCode';
+import { hashPassword, verifyPassword } from '../../../../../utils/password.manager';
 import {
+  deleteAllUserRefreshTokens,
   deleteRefreshToken,
   storeRefreshToken,
   validateStoredRefreshToken,
-} from '../../../../utils/refresh.manager';
+} from '../../../../../utils/refresh.manager';
 import {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
-} from '../../../../utils/token.manager';
-import { CreateAdminDTO, GetAdminDTO, UpdateAdminDTO } from './admin.interface';
-import { adminMessage } from './admin.message';
-import { adminRepository } from './admin.repository';
+} from '../../../../../utils/token.manager';
+import { CreateAdminDTO, GetAdminDTO, UpdateAdminDTO } from './account.interface';
+import { adminMessage } from './account.message';
+import { adminRepository } from './account.repository';
 
 class AdminService {
   async createAdmin(data: CreateAdminDTO): Promise<void> {
@@ -110,8 +111,18 @@ class AdminService {
     return admins;
   }
 
-  async deleteAdmin(id: string): Promise<void> {
-    await this.getAdminById(id);
+  async deleteAdmin(id: string, password: string): Promise<void> {
+    const admin = await adminRepository.getAdminById(id);
+
+    if (!admin || admin.deleted) {
+      throw new AppError(HttpStatusCode.NOT_FOUND, adminMessage.ADMIN_NOT_FOUND, false);
+    }
+
+    const isPasswordValid = await verifyPassword(password, admin.password);
+
+    if (!isPasswordValid) {
+      throw new AppError(HttpStatusCode.UNAUTHORIZED, adminMessage.INVALID_CURRENT_PASSWORD, false);
+    }
     await adminRepository.deleteAdmin(id);
   }
 
@@ -130,6 +141,8 @@ class AdminService {
     if (!isPasswordValid) {
       throw new AppError(HttpStatusCode.UNAUTHORIZED, adminMessage.INVALID_CREDENTIALS, false);
     }
+
+    await deleteAllUserRefreshTokens(admin.id);
 
     const accessToken = generateAccessToken(admin.id, admin.email);
 

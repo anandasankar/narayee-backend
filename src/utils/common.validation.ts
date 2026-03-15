@@ -1,23 +1,37 @@
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
+import { AppError } from '../errors/AppError';
+import { HttpStatusCode } from '../types/HttpStatusCode';
 
-/**
- * pageNo validation
- */
 export const pageNoValidation = z
   .string()
   .optional()
-  .transform((val) => (val ? parseInt(val, 10) : 1))
-  .refine((val) => !val || val > 0, {
-    message: 'pageNo must be greater than 0',
+  .default('1')
+  .transform((x) => (x ? Number(x) : 1))
+  .refine((num) => num >= 1, {
+    message: 'Page number must be at least 1',
   });
 
-/**
- * limit validation
- */
 export const limitValidation = z
   .string()
   .optional()
-  .transform((val) => (val ? parseInt(val, 10) : 10))
-  .refine((val) => !val || val > 0, {
-    message: 'limit must be greater than 0',
+  .default('10')
+  .transform((x) => (x ? Number(x) : 10))
+  .refine((num) => num >= 1 && num <= 1000, {
+    message: 'Limit must be between 1-1000',
   });
+
+export const parseJson = (val: string | undefined): Record<string, unknown> => {
+  if (!val) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(val);
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
+      throw error;
+    }
+
+    throw new AppError(HttpStatusCode.BAD_REQUEST, 'Invalid JSON format in filter', false);
+  }
+};

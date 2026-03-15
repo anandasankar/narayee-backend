@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { HttpStatusCode } from '../../../../types/HttpStatusCode';
-import { clearAuthCookies, setAuthCookies } from '../../../../utils/cookie.manager';
-import { sendResponse } from '../../../../utils/send.response';
-import { adminMessage } from './admin.message';
-import { adminService } from './admin.service';
+import { HttpStatusCode } from '../../../../../types/HttpStatusCode';
+import { clearAuthCookies, setAuthCookies } from '../../../../../utils/cookie.manager';
+import { sendResponse } from '../../../../../utils/send.response';
+import { adminMessage } from './account.message';
+import { adminService } from './account.service';
 
 class AdminController {
   async createAdmin(req: Request, res: Response): Promise<void> {
@@ -57,7 +57,9 @@ class AdminController {
 
   async deleteAdmin(req: Request, res: Response): Promise<void> {
     const adminId = req.user!.id;
-    await adminService.deleteAdmin(adminId);
+    const { password } = req.body;
+
+    await adminService.deleteAdmin(adminId, password);
 
     clearAuthCookies(res);
 

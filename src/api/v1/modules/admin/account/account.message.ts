@@ -9,7 +9,7 @@ export const adminMessage = {
   ADMIN_LOGOUT_SUCCESS: 'Admin logout successfully',
   INVALID_CREDENTIALS: 'Incorrect email or password',
   ADMIN_EMAIL_OR_MOBILE_ALREADY_EXISTS: 'Email or mobile number already exists',
-  INVALID_CURRENT_PASSWORD: 'Invalid current password',
+  INVALID_CURRENT_PASSWORD: 'Incorrect current password',
   PASSWORD_CHANGED_SUCCESSFULLY: 'Password changed successfully',
   TOKEN_REFRESHED: 'Token refreshed successfully',
 };
