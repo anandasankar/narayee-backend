@@ -127,3 +127,9 @@ export const changePasswordSchema = z.object({
     })
     .strict(),
 });
+
+export const refreshTokenSchema = z.object({
+  cookies: z.object({
+    refreshToken: z.string().min(1, { message: 'Refresh token is required' }),
+  }),
+});

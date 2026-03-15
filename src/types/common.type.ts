@@ -24,6 +24,7 @@ export interface RequestSchema {
   body?: unknown;
   query?: unknown;
   params?: unknown;
+  cookies?: unknown;
 }
 
 export interface TokenPayload extends JwtPayload {
@@ -35,6 +36,7 @@ export interface AuthRequest extends Request {
   user?: TokenPayload;
   cookies: {
     accessToken?: string;
+    refreshToken?: string;
   };
 }
 export interface RefreshTokenPayload extends JwtPayload {

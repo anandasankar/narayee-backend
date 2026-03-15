@@ -1,8 +1,18 @@
+import { commonMessages } from '../../../../constants/common.messages';
 import { AppError } from '../../../../errors/AppError';
 import { UnparsedFilterObject } from '../../../../types/common.type';
 import { HttpStatusCode } from '../../../../types/HttpStatusCode';
 import { hashPassword, verifyPassword } from '../../../../utils/password.manager';
-import { generateAccessToken } from '../../../../utils/token.manager';
+import {
+  deleteRefreshToken,
+  storeRefreshToken,
+  validateStoredRefreshToken,
+} from '../../../../utils/refresh.manager';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from '../../../../utils/token.manager';
 import { CreateAdminDTO, GetAdminDTO, UpdateAdminDTO } from './admin.interface';
 import { adminMessage } from './admin.message';
 import { adminRepository } from './admin.repository';
@@ -105,7 +115,10 @@ class AdminService {
     await adminRepository.deleteAdmin(id);
   }
 
-  async loginAdmin(email: string, password: string): Promise<string> {
+  async loginAdmin(
+    email: string,
+    password: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const admin = await adminRepository.getAdminByEmail(email);
 
     if (!admin) {
@@ -120,7 +133,39 @@ class AdminService {
 
     const accessToken = generateAccessToken(admin.id, admin.email);
 
-    return accessToken;
+    const { refreshToken, tokenId } = generateRefreshToken(admin.id, admin.email);
+    await storeRefreshToken(admin.id, tokenId, refreshToken);
+    return { accessToken, refreshToken };
+  }
+
+  async logoutAdmin(oldRefreshToken: string): Promise<void> {
+    const { id: userId, tokenId } = verifyRefreshToken(oldRefreshToken);
+    await deleteRefreshToken(userId, tokenId);
+  }
+
+  async refreshAdminToken(
+    oldRefreshToken: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const { id: userId, email, tokenId } = verifyRefreshToken(oldRefreshToken);
+
+    const isValid = await validateStoredRefreshToken(userId, tokenId, oldRefreshToken);
+    if (!isValid) {
+      throw new AppError(HttpStatusCode.UNAUTHORIZED, commonMessages.UNAUTHORIZED, false);
+    }
+
+    const admin = await adminRepository.getAdminById(userId);
+    if (!admin || !admin.active || admin.deleted) {
+      throw new AppError(HttpStatusCode.UNAUTHORIZED, commonMessages.UNAUTHORIZED, false);
+    }
+
+    await deleteRefreshToken(userId, tokenId);
+
+    const accessToken = generateAccessToken(userId, email);
+    const { refreshToken, tokenId: newTokenId } = generateRefreshToken(userId, email);
+
+    await storeRefreshToken(userId, newTokenId, refreshToken);
+
+    return { accessToken, refreshToken };
   }
 
   async changePassword(adminId: string, currentPassword: string, newPassword: string): Promise<void> {

@@ -71,8 +71,8 @@ class AdminController {
   async loginAdmin(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
 
-    const accessToken = await adminService.loginAdmin(email, password);
-    setAuthCookies(res, accessToken);
+    const { accessToken, refreshToken } = await adminService.loginAdmin(email, password);
+    setAuthCookies(res, accessToken, refreshToken);
 
     sendResponse(res, {
       success: true,
@@ -82,11 +82,27 @@ class AdminController {
   }
 
   async logoutAdmin(req: Request, res: Response): Promise<void> {
+    const token = req.cookies?.refreshToken;
+    if (token) await adminService.logoutAdmin(token);
+
     clearAuthCookies(res);
     sendResponse(res, {
       success: true,
       statusCode: HttpStatusCode.OK,
       message: adminMessage.ADMIN_LOGOUT_SUCCESS,
+    });
+  }
+
+  async refreshToken(req: Request, res: Response): Promise<void> {
+    const token = req.cookies.refreshToken;
+
+    const { accessToken, refreshToken } = await adminService.refreshAdminToken(token);
+    setAuthCookies(res, accessToken, refreshToken);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: HttpStatusCode.OK,
+      message: adminMessage.TOKEN_REFRESHED,
     });
   }
 

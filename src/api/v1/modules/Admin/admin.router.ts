@@ -7,6 +7,7 @@ import {
   createAdminSchema,
   getAllAdminSchema,
   loginAdminSchema,
+  refreshTokenSchema,
   updateAdminSchema,
 } from './admin.validation';
 
@@ -34,7 +35,10 @@ adminRouter.get('/profile/me', isAuthenticated, isAdmin, adminController.getAdmi
 adminRouter.delete('/delete', isAuthenticated, adminController.deleteAdmin);
 
 adminRouter.post('/login', validateRequest(loginAdminSchema), adminController.loginAdmin);
+
 adminRouter.post('/logout', isAuthenticated, adminController.logoutAdmin);
+
+adminRouter.post('/refresh-token', validateRequest(refreshTokenSchema), adminController.refreshToken);
 
 adminRouter.post(
   '/change-password',
@@ -44,7 +48,5 @@ adminRouter.post(
 );
 
 //TODO: Forgot Password API(send email otp)
-//TODO: Google Login API
-//TODO: Refresh Token API
 
 export default adminRouter;

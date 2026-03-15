@@ -11,4 +11,5 @@ export const adminMessage = {
   ADMIN_EMAIL_OR_MOBILE_ALREADY_EXISTS: 'Email or mobile number already exists',
   INVALID_CURRENT_PASSWORD: 'Invalid current password',
   PASSWORD_CHANGED_SUCCESSFULLY: 'Password changed successfully',
+  TOKEN_REFRESHED: 'Token refreshed successfully',
 };
