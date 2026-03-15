@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
-    "build": "tsc",
+    "build": "npm run copy:swagger && tsc",
+    "copy:swagger": "copyfiles -u 2 \"src/swagger/**/*.yml\" dist/swagger",
+    "prod": "npm ci && npm run clean && npm run db:deploy && npm run build && npm start",
     "start": "node dist/server.js",
     "db:migrate": "prisma migrate dev && prisma generate",
     "db:deploy": "prisma migrate deploy && prisma generate",
@@ -19,7 +21,7 @@
     "prepare": "husky",
     "clean": "rm -rf dist",
     "validate:branch": "tsx scripts/validateBranch.ts",
-    "seed:default": "tsx src/seeds/index.ts"
+    "seed:default": "tsx ./seeds/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -66,6 +68,7 @@
     "@types/winston": "^2.4.4",
     "@types/yamljs": "^0.2.34",
     "commitlint": "^20.4.2",
+    "copyfiles": "^2.4.1",
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",

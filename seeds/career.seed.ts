@@ -1,6 +1,6 @@
 import { CourseLevel } from '@prisma/client';
-import { prisma } from '../lib/prisma';
-import logger from '../logger';
+import { prisma } from '../src/lib/prisma';
+import logger from '../src/logger';
 
 const careers = [
   {
