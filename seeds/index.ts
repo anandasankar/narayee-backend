@@ -1,5 +1,5 @@
-import { prisma } from '../lib/prisma';
-import logger from '../logger';
+import { prisma } from '../src/lib/prisma';
+import logger from '../src/logger';
 import { seedCareers } from './career.seed';
 
 async function main(): Promise<void> {
