@@ -42,3 +42,15 @@ export const validateStoredRefreshToken = async (
 export const deleteRefreshToken = async (userId: string, tokenId: string): Promise<void> => {
   await redisClient.del(`refresh:${userId}:${tokenId}`);
 };
+
+/**
+ * Delete User All Refresh Token
+ */
+export const deleteAllUserRefreshTokens = async (userId: string): Promise<void> => {
+  const pattern = `refresh:${userId}:*`;
+  const keys = await redisClient.keys(pattern);
+
+  if (keys.length > 0) {
+    await redisClient.del(keys);
+  }
+};

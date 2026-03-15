@@ -1,5 +1,5 @@
 paths:
-  /admin/login:
+  /account/admin/login:
     post:
       tags:
         - Admin Auth
@@ -110,7 +110,7 @@ paths:
                     type: string
                     example: Something went wrong
 
-  /admin/logout:
+  /account/admin/logout:
     post:
       tags:
         - Admin Auth
@@ -182,7 +182,7 @@ paths:
                     type: string
                     example: Something went wrong
 
-  /admin/refresh-token:
+  /account/admin/refresh-token:
     post:
       tags:
         - Admin Auth

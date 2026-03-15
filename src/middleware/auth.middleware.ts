@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express';
-import { adminRepository } from '../api/v1/modules/Admin/admin.repository';
+import { adminRepository } from '../api/v1/modules/admin/account/account.repository';
 import { commonMessages } from '../constants/common.messages';
 import { AppError } from '../errors/AppError';
 import { AuthRequest } from '../types/common.type';

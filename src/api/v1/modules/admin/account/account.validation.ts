@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { limitValidation, pageNoValidation } from '../../../../utils/common.validation';
+import { limitValidation, pageNoValidation } from '../../../../../utils/common.validation';
 
 export const requiredString = (field: string, max = 25): z.ZodType<string> =>
   z
@@ -132,4 +132,12 @@ export const refreshTokenSchema = z.object({
   cookies: z.object({
     refreshToken: z.string().min(1, { message: 'Refresh token is required' }),
   }),
+});
+
+export const deleteAdminSchema = z.object({
+  body: z
+    .object({
+      password: z.string().min(1, 'Password is required'),
+    })
+    .strict(),
 });
