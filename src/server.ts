@@ -7,8 +7,16 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, async () => {
+const start = async (): Promise<void> => {
   await connectRedis();
-  logger.info(`Server is running on port ${PORT}`);
-  logger.info(`API docs available at http://localhost:${PORT}/api-docs`);
+
+  app.listen(PORT, () => {
+    logger.info(`Server is running on port ${PORT}`);
+    logger.info(`API docs available at http://localhost:${PORT}/api-docs`);
+  });
+};
+
+start().catch((error) => {
+  logger.error('Failed to start server:', error);
+  process.exit(1);
 });

@@ -15,6 +15,7 @@ const validateRequest =
         body: req.body,
         query: req.query,
         params: req.params,
+        cookies: req.cookies,
       });
 
       if (parsedData.body !== undefined) {

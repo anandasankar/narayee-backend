@@ -8,6 +8,6 @@ export default {
       ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'],
     ],
 
-    'subject-case': [2, 'always', ['sentence-case']],
+    'subject-case': [2, 'always', ['lower-case']],
   },
 };
