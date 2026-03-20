@@ -1,0 +1,51 @@
+model User {
+    id                String    @id @default(cuid())
+    firstName         String
+    middleName        String?
+    lastName          String
+    email             String?   @unique
+    mobileNumber      String    @unique
+    password          String
+    avatar            String?
+    isEmailVerified   Boolean   @default(false)
+    isMobileVerified  Boolean   @default(false)
+    profileCompletion Int       @default(0)
+    active            Boolean   @default(true)
+    deleted           Boolean   @default(false)
+    deletedAt         DateTime?
+
+    testimonials Testimonial[]
+    enrollments  Enrollment[]
+    educations   Education[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Education {
+    id             String  @id @default(cuid())
+    userId         String
+    college        String?
+    degree         Degree?
+    customDegree   String?
+    graduationYear Int?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([userId])
+    @@index([college])
+}
+
+enum Degree {
+    BSC
+    BCA
+    BTECH
+    MCA
+    MSC
+    MTECH
+    DIPLOMA
+    OTHER
+}

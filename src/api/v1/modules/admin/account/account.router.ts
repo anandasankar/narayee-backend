@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { isAdmin, isAuthenticated } from '../../../../../middleware/auth.middleware';
-import validateRequest from '../../../../../middleware/validate.request';
+import { authRateLimiter } from '../../../../../utils/common.middleware';
+import { isAdmin, isAuthenticated } from '../../../middleware/auth.middleware';
+import validateRequest from '../../../middleware/validate.request';
 import { adminController } from './account.controller';
 import {
   changePasswordSchema,
@@ -40,7 +41,12 @@ adminAccountRouter.delete(
   adminController.deleteAdmin,
 );
 
-adminAccountRouter.post('/admin/login', validateRequest(loginAdminSchema), adminController.loginAdmin);
+adminAccountRouter.post(
+  '/admin/login',
+  authRateLimiter,
+  validateRequest(loginAdminSchema),
+  adminController.loginAdmin,
+);
 
 adminAccountRouter.post('/admin/logout', isAuthenticated, adminController.logoutAdmin);
 

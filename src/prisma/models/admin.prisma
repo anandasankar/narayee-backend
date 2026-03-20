@@ -1,13 +1,17 @@
 model Admin {
-  id           String   @id @default(cuid())
+  id           String  @id @default(cuid())
   firstName    String
   middleName   String?
   lastName     String
-  email        String   @unique
-  mobileNumber String?  @unique
+  email        String  @unique
+  mobileNumber String? @unique
+  avatar       String?
   password     String
-  active       Boolean  @default(true)
-  deleted      Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  active       Boolean @default(true)
+  deleted      Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  testimonials Testimonial[] @relation("AdminApprovedTestimonials")
 }

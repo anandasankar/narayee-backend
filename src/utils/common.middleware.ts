@@ -1,13 +1,12 @@
-import morgan from 'morgan';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 import cors from 'cors';
-import { RequestHandler } from 'express';
-import { sendResponse } from '../utils/send.response';
-import { Request, Response, NextFunction } from 'express';
-import logger from '../logger';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import morgan from 'morgan';
 import { commonMessages } from '../constants/common.messages';
+import logger from '../logger';
 import { HttpStatusCode } from '../types/HttpStatusCode';
+import { sendResponse } from './send.response';
 
 const isProduction = process.env.NODE_ENV === 'production';
 export const morganMiddleware = morgan(isProduction ? 'combined' : 'dev');
@@ -32,7 +31,7 @@ export const rateLimiter = rateLimit({
 
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 3,
 
   handler: (req: Request, res: Response) => {
     logger.warn(`Auth rate limit exceeded: ${req.ip}`);

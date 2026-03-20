@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { isAdmin, isAuthenticated } from '../../../../../middleware/auth.middleware';
-import validateRequest from '../../../../../middleware/validate.request';
+import { isAdmin, isAuthenticated } from '../../middleware/auth.middleware';
+import validateRequest from '../../middleware/validate.request';
 import { careerController } from './career.controller';
 import {
   createCareerSchema,

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import adminAccountRouter from './account/account.router';
-import careerRouter from './career/career.router';
+import adminAccountRouter from '../modules/admin/account/account.router';
+import careerRouter from '../modules/career/career.router';
 
 const adminRouter = Router();
 

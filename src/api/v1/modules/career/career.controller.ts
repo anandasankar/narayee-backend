@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { HttpStatusCode } from '../../../../../types/HttpStatusCode';
-import { sendResponse } from '../../../../../utils/send.response';
+import { HttpStatusCode } from '../../../../types/HttpStatusCode';
+import { sendResponse } from '../../../../utils/send.response';
 import { careerMessage } from './career.message';
 import { careerService } from './career.service';
 
