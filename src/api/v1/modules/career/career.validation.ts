@@ -1,6 +1,6 @@
 import { CourseLevel } from '@prisma/client';
 import { z } from 'zod';
-import { limitValidation, pageNoValidation, parseJson } from '../../../../../utils/common.validation';
+import { limitValidation, pageNoValidation, parseJson } from '../../../../utils/common.validation';
 const durationValues = [
   '2 Months',
   '3 Months',

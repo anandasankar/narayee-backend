@@ -1,0 +1,18 @@
+model Enrollment {
+  id         String           @id @default(cuid())
+  userId     String
+  careerId   String
+  enrolledAt DateTime         @default(now())
+  status     EnrollmentStatus @default(ACTIVE)
+
+  user   User   @relation(fields: [userId], references: [id])
+  career Career @relation(fields: [careerId], references: [id])
+
+  @@unique([userId, careerId])
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+}

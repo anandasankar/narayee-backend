@@ -1,0 +1,31 @@
+model CallbackRequest {
+    id           String         @id @default(cuid())
+    name         String
+    mobileNumber String
+    preferredAt  DateTime
+    enquiryType  EnquiryType
+    notes        String?
+    status       CallbackStatus @default(PENDING)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([mobileNumber])
+    @@index([status])
+    @@index([preferredAt])
+}
+
+enum EnquiryType {
+    ONLINE_COURSE
+    OFFLINE_COURSE
+    DEMO_CLASS
+    CONSULTATION
+    OTHER
+}
+
+enum CallbackStatus {
+    PENDING
+    SCHEDULED
+    COMPLETED
+    CANCELLED
+}

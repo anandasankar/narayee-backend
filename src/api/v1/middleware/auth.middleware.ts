@@ -1,10 +1,10 @@
 import { NextFunction, Response } from 'express';
-import { adminRepository } from '../api/v1/modules/admin/account/account.repository';
-import { commonMessages } from '../constants/common.messages';
-import { AppError } from '../errors/AppError';
-import { AuthRequest } from '../types/common.type';
-import { HttpStatusCode } from '../types/HttpStatusCode';
-import { verifyAccessToken } from '../utils/token.manager';
+import { commonMessages } from '../../../constants/common.messages';
+import { AppError } from '../../../errors/AppError';
+import { AuthRequest } from '../../../types/common.type';
+import { HttpStatusCode } from '../../../types/HttpStatusCode';
+import { verifyAccessToken } from '../../../utils/token.manager';
+import { adminRepository } from '../modules/admin/account/account.repository';
 
 export const isAuthenticated = (req: AuthRequest, res: Response, next: NextFunction): void => {
   const token = req.cookies?.accessToken;

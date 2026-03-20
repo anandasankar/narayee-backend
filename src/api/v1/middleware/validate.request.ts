@@ -1,11 +1,11 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { ZodError, ZodType } from 'zod';
-import { commonMessages } from '../constants/common.messages';
-import { AppError, errorHandler } from '../errors/AppError';
-import logger from '../logger';
-import { RequestSchema } from '../types/common.type';
-import { HttpStatusCode } from '../types/HttpStatusCode';
-import { sendResponse } from '../utils/send.response';
+import { commonMessages } from '../../../constants/common.messages';
+import { AppError, errorHandler } from '../../../errors/AppError';
+import logger from '../../../logger';
+import { RequestSchema } from '../../../types/common.type';
+import { HttpStatusCode } from '../../../types/HttpStatusCode';
+import { sendResponse } from '../../../utils/send.response';
 
 const validateRequest =
   (schema: ZodType<RequestSchema>): RequestHandler =>

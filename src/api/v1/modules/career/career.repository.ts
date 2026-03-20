@@ -1,7 +1,7 @@
 import { Career, Prisma } from '@prisma/client';
-import { prisma } from '../../../../../lib/prisma';
-import { GetAllResponseDTO } from '../../../../../types/common.type';
-import { paginationMethod } from '../../../../../utils/helper.utils';
+import { prisma } from '../../../../lib/prisma';
+import { GetAllResponseDTO } from '../../../../types/common.type';
+import { paginationMethod } from '../../../../utils/helper.utils';
 import { CareerFilterDTO, CreateCareerDTO, UpdateCareerDTO } from './career.interface';
 
 class CareerRepository {

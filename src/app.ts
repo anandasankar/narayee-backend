@@ -3,18 +3,18 @@ import cookieParser from 'cookie-parser';
 import express, { NextFunction, Request, Response } from 'express';
 import hpp from 'hpp';
 import swaggerUi from 'swagger-ui-express';
-import mainRouter from './api/v1/modules/index.router';
+import mainRouter from './api/v1/index.router';
 import { commonMessages } from './constants/common.messages';
 import { globalErrorHandler } from './errors/globalErrorHandler';
+import { loadAndMergeSwaggerSpecs, swaggerOptions } from './swagger/loader';
+import { HttpStatusCode } from './types/HttpStatusCode';
 import {
   corsOptions,
   helmetMiddleware,
   morganMiddleware,
   rateLimiter,
   requestValidator,
-} from './middleware/common.middleware';
-import { loadAndMergeSwaggerSpecs, swaggerOptions } from './swagger/loader';
-import { HttpStatusCode } from './types/HttpStatusCode';
+} from './utils/common.middleware';
 import { sendResponse } from './utils/send.response';
 
 const app = express();

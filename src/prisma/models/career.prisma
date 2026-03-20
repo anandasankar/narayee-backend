@@ -1,13 +1,19 @@
 model Career {
-  id               String      @id @default(cuid())
-  title            String      @unique
+  id               String        @id @default(cuid())
+  title            String        @unique
   shortDescription String
   description      String
   duration         String
   level            CourseLevel[]
   image            String?
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
+  price            Decimal       @default(0.00) @db.Decimal(10, 2)
+
+  enrollments Enrollment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  testimonials Testimonial[]
 }
 
 enum CourseLevel {

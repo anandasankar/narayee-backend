@@ -1,7 +1,7 @@
 import { Career } from '@prisma/client';
-import { AppError } from '../../../../../errors/AppError';
-import { HttpStatusCode } from '../../../../../types/HttpStatusCode';
-import { GetAllResponseDTO, UnparsedFilterObject } from '../../../../../types/common.type';
+import { AppError } from '../../../../errors/AppError';
+import { HttpStatusCode } from '../../../../types/HttpStatusCode';
+import { GetAllResponseDTO, UnparsedFilterObject } from '../../../../types/common.type';
 import { CreateCareerDTO, UpdateCareerDTO } from './career.interface';
 import { careerMessage } from './career.message';
 import { careerRepository } from './career.repository';
