@@ -1,0 +1,679 @@
+paths:
+  /notification:
+    post:
+      tags:
+        - Notification
+      summary: Create Notification
+      description: Creates a new notification. Admin only. Optionally schedule a future `publishedAt` and set an `expiresAt`.
+
+      security:
+        - cookieAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - type
+              properties:
+                title:
+                  type: string
+                  minLength: 3
+                  maxLength: 150
+                  example: New Batch Starting Soon
+
+                description:
+                  type: string
+                  minLength: 10
+                  maxLength: 1000
+                  example: A new full-stack development batch is starting on 1st April 2026. Register now to secure your seat.
+
+                type:
+                  type: string
+                  enum:
+                    - BATCH
+                    - COURSE
+                    - REVIEW
+                    - SYSTEM
+                    - OTHER
+                  example: BATCH
+
+                publishedAt:
+                  type: string
+                  format: date-time
+                  description: When the notification becomes visible. Defaults to now if not provided.
+                  example: '2026-03-25T09:00:00.000Z'
+
+                expiresAt:
+                  type: string
+                  format: date-time
+                  description: When the notification stops being visible. Must be after publishedAt.
+                  example: '2026-04-01T23:59:59.000Z'
+
+      responses:
+        '201':
+          description: Notification created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: Notification created successfully
+
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: expiresAt must be after publishedAt
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Unauthorized
+
+        '403':
+          description: Forbidden — not an admin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 403
+                  message:
+                    type: string
+                    example: Access denied
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 500
+                  message:
+                    type: string
+                    example: Something went wrong
+
+    get:
+      tags:
+        - Notification
+      summary: Get Active Notifications (Public)
+      description: >
+        Returns a paginated list of active, published, and non-expired notifications.
+        Publicly accessible — no authentication required.
+        Filters: `title` (partial match), `type`.
+
+      parameters:
+        - name: pageNo
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 1
+
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 10
+
+        - name: filter
+          in: query
+          required: false
+          description: JSON stringified filter object. Supported fields — `title`, `type`.
+          schema:
+            type: string
+            example: '{"type":"BATCH"}'
+
+      responses:
+        '200':
+          description: Notifications fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Notifications fetched successfully
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        example: 8
+                      result:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Notification'
+
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /notification/admin/all:
+    get:
+      tags:
+        - Notification
+      summary: Get All Notifications (Admin)
+      description: >
+        Returns a paginated list of all non-deleted notifications regardless of active status or expiry.
+        Supports filtering by `title`, `type`, and `active`.
+        Admin only.
+
+      security:
+        - cookieAuth: []
+
+      parameters:
+        - name: pageNo
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 1
+
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 10
+
+        - name: filter
+          in: query
+          required: false
+          description: >
+            JSON stringified filter object.
+            Supported fields — `title` (partial match), `type`, `active` (boolean).
+          schema:
+            type: string
+            example: '{"active":false,"type":"SYSTEM"}'
+
+      responses:
+        '200':
+          description: Notifications fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Notifications fetched successfully
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        example: 35
+                      result:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Notification'
+
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '403':
+          description: Forbidden — not an admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /notification/{id}:
+    get:
+      tags:
+        - Notification
+      summary: Get Notification By ID
+      description: Fetches a single non-deleted notification by its CUID. Admin only.
+
+      security:
+        - cookieAuth: []
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: CUID of the notification
+          schema:
+            type: string
+            example: clx1234abcd5678efgh
+
+      responses:
+        '200':
+          description: Notification fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Notification fetched successfully
+                  data:
+                    $ref: '#/components/schemas/Notification'
+
+        '400':
+          description: Invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '403':
+          description: Forbidden — not an admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Notification not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: Notification not found
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Notification
+      summary: Update Notification
+      description: >
+        Updates a notification by ID. Admin only.
+        At least one field must be provided.
+        Use `active: false` to deactivate without deleting.
+
+      security:
+        - cookieAuth: []
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: CUID of the notification
+          schema:
+            type: string
+            example: clx1234abcd5678efgh
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                title:
+                  type: string
+                  minLength: 3
+                  maxLength: 150
+                  example: Updated Batch Title
+
+                description:
+                  type: string
+                  minLength: 10
+                  maxLength: 1000
+                  example: Updated description with more details about the upcoming batch.
+
+                type:
+                  type: string
+                  enum:
+                    - BATCH
+                    - COURSE
+                    - REVIEW
+                    - SYSTEM
+                    - OTHER
+                  example: COURSE
+
+                active:
+                  type: boolean
+                  description: Set to false to deactivate the notification without deleting it.
+                  example: false
+
+                publishedAt:
+                  type: string
+                  format: date-time
+                  example: '2026-03-25T09:00:00.000Z'
+
+                expiresAt:
+                  type: string
+                  format: date-time
+                  example: '2026-04-10T23:59:59.000Z'
+
+      responses:
+        '200':
+          description: Notification updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Notification updated successfully
+
+        '400':
+          description: Validation error or empty update body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: At least one field must be provided to update
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '403':
+          description: Forbidden — not an admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Notification not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: Notification not found
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Notification
+      summary: Delete Notification
+      description: Soft-deletes a notification by ID. The record is retained in the database with `deleted = true`. Admin only.
+
+      security:
+        - cookieAuth: []
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: CUID of the notification
+          schema:
+            type: string
+            example: clx1234abcd5678efgh
+
+      responses:
+        '200':
+          description: Notification deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Notification deleted successfully
+
+        '400':
+          description: Invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '403':
+          description: Forbidden — not an admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Notification not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  statusCode:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: Notification not found
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1234abcd5678efgh
+        title:
+          type: string
+          example: New Batch Starting Soon
+        description:
+          type: string
+          example: A new full-stack development batch is starting on 1st April 2026.
+        type:
+          type: string
+          enum:
+            - BATCH
+            - COURSE
+            - REVIEW
+            - SYSTEM
+            - OTHER
+          example: BATCH
+        publishedAt:
+          type: string
+          format: date-time
+          example: '2026-03-25T09:00:00.000Z'
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-04-01T23:59:59.000Z'
+        active:
+          type: boolean
+          example: true
+        deleted:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-03-20T08:00:00.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-03-20T08:00:00.000Z'
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+          example: 500
+        message:
+          type: string
+          example: Something went wrong
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
