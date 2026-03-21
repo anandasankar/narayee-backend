@@ -6,5 +6,5 @@ export const commonMessages = {
   TOO_MANY_REQUESTS: 'Too many requests',
   TOO_MANY_LOGIN: 'Too many login attempts',
   TOKEN_REQUIRE: 'Access Token Required',
-  UNAUTHORIZED: 'Unauthorized user',
+  UNAUTHORIZED: 'Unauthorized access',
 };
