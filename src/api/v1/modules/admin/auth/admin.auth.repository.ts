@@ -1,7 +1,7 @@
 import { Admin, Prisma } from '@prisma/client';
 import { prisma } from '../../../../../lib/prisma';
 import { paginationMethod } from '../../../../../utils/helper.utils';
-import { CreateAdminDTO, GetAdminDTO, UpdateAdminDTO } from './account.interface';
+import { CreateAdminDTO, GetAdminDTO, UpdateAdminDTO } from './admin.auth.interface';
 
 class AdminRepository {
   async createAdmin(data: CreateAdminDTO): Promise<void> {

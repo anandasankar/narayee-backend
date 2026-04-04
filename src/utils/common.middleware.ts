@@ -31,7 +31,7 @@ export const rateLimiter = rateLimit({
 
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 3,
+  max: 5,
 
   handler: (req: Request, res: Response) => {
     logger.warn(`Auth rate limit exceeded: ${req.ip}`);

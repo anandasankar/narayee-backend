@@ -1,0 +1,17 @@
+export const userMessage = {
+  USER_CREATED: 'User created successfully',
+  USER_ALREADY_EXISTS: 'User already exists',
+  USER_FETCHED: 'User fetched successfully',
+  USER_NOT_FOUND: 'User not found',
+  USER_UPDATED: 'User updated successfully',
+  USER_DELETED: 'User deleted successfully',
+  USER_LOGIN_SUCCESS: 'User login successfully',
+  USER_LOGOUT_SUCCESS: 'User logout successfully',
+  INVALID_CREDENTIALS: 'Incorrect mobile number or password',
+  USER_MOBILE_ALREADY_EXISTS: 'Mobile number already exists',
+  USER_EMAIL_ALREADY_EXISTS: 'Email already exists',
+  USER_EMAIL_OR_MOBILE_ALREADY_EXISTS: 'Email or mobile number already exists',
+  INVALID_CURRENT_PASSWORD: 'Incorrect current password',
+  PASSWORD_CHANGED_SUCCESSFULLY: 'Password changed successfully',
+  TOKEN_REFRESHED: 'Token refreshed successfully',
+};

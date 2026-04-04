@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { authRateLimiter } from '../../../../../utils/common.middleware';
 import { isAdmin, isAuthenticated } from '../../../middleware/auth.middleware';
 import validateRequest from '../../../middleware/validate.request';
-import { adminController } from './account.controller';
+import { adminController } from './admin.auth.controller';
 import {
   changePasswordSchema,
   createAdminSchema,
@@ -11,53 +11,53 @@ import {
   loginAdminSchema,
   refreshTokenSchema,
   updateAdminSchema,
-} from './account.validation';
+} from './admin.auth.validation';
 
-const adminAccountRouter = Router();
+const adminAuthRouter = Router();
 
-adminAccountRouter.post('/admin', validateRequest(createAdminSchema), adminController.createAdmin);
+adminAuthRouter.post('/register', validateRequest(createAdminSchema), adminController.createAdmin);
 
-adminAccountRouter.put(
-  '/admin',
+adminAuthRouter.put(
+  '/me',
   isAuthenticated,
   validateRequest(updateAdminSchema),
   adminController.updateAdmin,
 );
 
-adminAccountRouter.get(
-  '/admin',
+adminAuthRouter.get(
+  '/get-all',
   isAuthenticated,
   isAdmin,
   validateRequest(getAllAdminSchema),
   adminController.getAllAdmins,
 );
 
-adminAccountRouter.get('/admin/me', isAuthenticated, isAdmin, adminController.getAdminById);
+adminAuthRouter.get('/me', isAuthenticated, isAdmin, adminController.getAdminById);
 
-adminAccountRouter.delete(
-  '/admin',
+adminAuthRouter.delete(
+  '/me',
   validateRequest(deleteAdminSchema),
   isAuthenticated,
   adminController.deleteAdmin,
 );
 
-adminAccountRouter.post(
-  '/admin/login',
+adminAuthRouter.post(
+  '/login',
   authRateLimiter,
   validateRequest(loginAdminSchema),
   adminController.loginAdmin,
 );
 
-adminAccountRouter.post('/admin/logout', isAuthenticated, adminController.logoutAdmin);
+adminAuthRouter.post('/logout', isAuthenticated, adminController.logoutAdmin);
 
-adminAccountRouter.post(
-  '/admin/refresh-token',
+adminAuthRouter.post(
+  '/refresh-token',
   validateRequest(refreshTokenSchema),
   adminController.refreshToken,
 );
 
-adminAccountRouter.post(
-  '/admin/change-password',
+adminAuthRouter.post(
+  '/change-password',
   isAuthenticated,
   validateRequest(changePasswordSchema),
   adminController.changePassword,
@@ -65,4 +65,4 @@ adminAccountRouter.post(
 
 //TODO: Forgot Password API(send email otp)
 
-export default adminAccountRouter;
+export default adminAuthRouter;

@@ -1,0 +1,128 @@
+paths:
+  /auth/user/register:
+    post:
+      tags:
+        - User
+      summary: User Registration
+      description: Registers a new user with mobile number and password. Email is optional.
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - mobileNumber
+                - password
+              properties:
+                firstName:
+                  type: string
+                  maxLength: 25
+                  example: Ananda
+
+                middleName:
+                  type: string
+                  maxLength: 25
+                  example: Kumar
+
+                lastName:
+                  type: string
+                  maxLength: 25
+                  example: Sankar
+
+                email:
+                  type: string
+                  format: email
+                  example: ananda@example.com
+
+                mobileNumber:
+                  type: string
+                  pattern: '^(\+91)?[6-9]\d{9}$'
+                  example: 9876543210
+
+                password:
+                  type: string
+                  minLength: 6
+                  maxLength: 25
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#^()_\-+=]).*$'
+                  example: User@123
+
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 201
+
+                  message:
+                    type: string
+                    example: User created successfully
+
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 400
+
+                  message:
+                    type: string
+                    example: Invalid input data
+
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 409
+
+                  message:
+                    type: string
+                    example: User already exists
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong

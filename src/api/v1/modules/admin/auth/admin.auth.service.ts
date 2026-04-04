@@ -14,9 +14,9 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from '../../../../../utils/token.manager';
-import { CreateAdminDTO, GetAdminDTO, UpdateAdminDTO } from './account.interface';
-import { adminMessage } from './account.message';
-import { adminRepository } from './account.repository';
+import { CreateAdminDTO, GetAdminDTO, UpdateAdminDTO } from './admin.auth.interface';
+import { adminMessage } from './admin.auth.message';
+import { adminRepository } from './admin.auth.repository';
 
 class AdminService {
   async createAdmin(data: CreateAdminDTO): Promise<void> {
