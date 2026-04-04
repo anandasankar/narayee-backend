@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import { HttpStatusCode } from '../../../../../types/HttpStatusCode';
 import { clearAuthCookies, setAuthCookies } from '../../../../../utils/cookie.manager';
 import { sendResponse } from '../../../../../utils/send.response';
-import { adminMessage } from './account.message';
-import { adminService } from './account.service';
+import { adminMessage } from './admin.auth.message';
+import { adminService } from './admin.auth.service';
 
 class AdminController {
   async createAdmin(req: Request, res: Response): Promise<void> {
