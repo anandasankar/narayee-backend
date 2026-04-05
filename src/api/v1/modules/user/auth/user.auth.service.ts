@@ -1,5 +1,6 @@
 import { commonMessages } from '../../../../../constants/common.messages';
 import { AppError } from '../../../../../errors/AppError';
+import { onUserCreate } from '../../../../../events/user/user.evnet';
 import { UnparsedFilterObject } from '../../../../../types/common.type';
 import { HttpStatusCode } from '../../../../../types/HttpStatusCode';
 import { hashPassword, verifyPassword } from '../../../../../utils/password.manager';
@@ -28,13 +29,20 @@ class UserService {
       throw new AppError(HttpStatusCode.CONFLICT, userMessage.USER_ALREADY_EXISTS, false);
     }
 
-    await userRepository.createUser({
+    const user = await userRepository.createUser({
       firstName: data.firstName,
       middleName: data.middleName,
       lastName: data.lastName,
       email: data.email,
       mobileNumber: data.mobileNumber,
       password: hashedPassword,
+    });
+
+    await onUserCreate({
+      userId: user.id,
+      email: user.email ?? null,
+      mobileNumber: user.mobileNumber,
+      fullName: `${user.firstName} ${user.middleName ?? ''} ${user.lastName}`.trim(),
     });
   }
 
@@ -114,6 +122,10 @@ class UserService {
 
     if (!isPasswordValid) {
       throw new AppError(HttpStatusCode.UNAUTHORIZED, userMessage.INVALID_CREDENTIALS, false);
+    }
+
+    if (!user.isEmailVerified) {
+      throw new AppError(HttpStatusCode.FORBIDDEN, userMessage.EMAIL_NOT_VERIFIED, false);
     }
 
     if (!user.active) {
