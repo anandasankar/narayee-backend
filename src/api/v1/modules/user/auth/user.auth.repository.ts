@@ -4,8 +4,8 @@ import { paginationMethod } from '../../../../../utils/helper.utils';
 import { CreateUserDTO, GetUserDTO, UpdateUserDTO } from './user.auth.interface';
 
 class UserRepository {
-  async createUser(data: CreateUserDTO): Promise<void> {
-    await prisma.user.create({
+  async createUser(data: CreateUserDTO): Promise<User> {
+    return await prisma.user.create({
       data: {
         firstName: data.firstName,
         middleName: data.middleName,

@@ -14,4 +14,5 @@ export const userMessage = {
   INVALID_CURRENT_PASSWORD: 'Incorrect current password',
   PASSWORD_CHANGED_SUCCESSFULLY: 'Password changed successfully',
   TOKEN_REFRESHED: 'Token refreshed successfully',
+  EMAIL_NOT_VERIFIED: 'Please verify your email to continue',
 };

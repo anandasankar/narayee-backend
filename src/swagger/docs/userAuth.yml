@@ -1,0 +1,201 @@
+paths:
+  /auth/user/login:
+    post:
+      tags:
+        - User Auth
+      summary: User Login
+      description: Login using email or mobile number with password. Returns authentication cookies.
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - identifier
+                - password
+              properties:
+                identifier:
+                  type: string
+                  description: Email or 10-digit mobile number (without +91)
+                  example: 9876543210
+
+                password:
+                  type: string
+                  description: User password
+                  example: User@123
+
+      responses:
+        '200':
+          description: Login successful
+          headers:
+            Set-Cookie:
+              description: Auth cookies (accessToken, refreshToken)
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 200
+
+                  message:
+                    type: string
+                    example: User login successfully
+
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 401
+
+                  message:
+                    type: string
+                    example: Incorrect mobile number or password
+
+        '403':
+          description: Forbidden (email not verified or user inactive)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 403
+
+                  message:
+                    type: string
+                    example: Please verify your email to continue
+
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 400
+
+                  message:
+                    type: string
+                    example: Email or mobile number is required
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong
+
+  /auth/user/logout:
+    post:
+      tags:
+        - User Auth
+      summary: User Logout
+      description: Logs out the authenticated user by invalidating the refresh token and clearing auth cookies.
+
+      security:
+        - cookieAuth: []
+
+      responses:
+        '200':
+          description: Logout successful
+          headers:
+            Set-Cookie:
+              description: Clears authentication cookies (accessToken, refreshToken)
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  statusCode:
+                    type: integer
+                    example: 200
+
+                  message:
+                    type: string
+                    example: User logout successfully
+
+        '401':
+          description: Unauthorized (user not authenticated)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 401
+
+                  message:
+                    type: string
+                    example: Unauthorized access
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+
+                  statusCode:
+                    type: integer
+                    example: 500
+
+                  message:
+                    type: string
+                    example: Something went wrong
