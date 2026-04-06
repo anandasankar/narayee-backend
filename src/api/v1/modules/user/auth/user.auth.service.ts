@@ -1,6 +1,6 @@
 import { commonMessages } from '../../../../../constants/common.messages';
 import { AppError } from '../../../../../errors/AppError';
-import { onUserCreate } from '../../../../../events/user/user.evnet';
+import { onUserCreate } from '../../../../../systemEvents/user.events';
 import { UnparsedFilterObject } from '../../../../../types/common.type';
 import { HttpStatusCode } from '../../../../../types/HttpStatusCode';
 import { hashPassword, verifyPassword } from '../../../../../utils/password.manager';

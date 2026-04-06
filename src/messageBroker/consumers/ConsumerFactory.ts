@@ -1,4 +1,4 @@
-import logger from '../../../logger';
+import logger from '../../logger';
 import { userCreatedConsumer } from './user.consumer.service';
 
 export class ConsumerFactory {
