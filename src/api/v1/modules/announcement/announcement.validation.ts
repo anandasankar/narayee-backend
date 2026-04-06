@@ -1,10 +1,10 @@
-import { NotificationType } from '@prisma/client';
+import { AnnouncementType } from '@prisma/client';
 import { z } from 'zod';
 import { limitValidation, pageNoValidation, parseJson } from '../../../../utils/common.validation';
 
-const notificationTypeEnum = z.nativeEnum(NotificationType);
+const announcementTypeEnum = z.nativeEnum(AnnouncementType);
 
-export const createNotificationSchema = z.object({
+export const createAnnouncementSchema = z.object({
   body: z
     .object({
       title: z
@@ -17,7 +17,7 @@ export const createNotificationSchema = z.object({
         .min(10, 'Description must be at least 10 characters')
         .max(1000, 'Description must be less than 1000 characters'),
 
-      type: notificationTypeEnum,
+      type: announcementTypeEnum,
 
       publishedAt: z
         .string()
@@ -43,16 +43,16 @@ export const createNotificationSchema = z.object({
     ),
 });
 
-export const updateNotificationSchema = z.object({
+export const updateAnnouncementSchema = z.object({
   params: z.object({
-    id: z.string().cuid({ message: 'Invalid notification id format' }),
+    id: z.string().cuid({ message: 'Invalid announcement id format' }),
   }),
 
   body: z
     .object({
       title: z.string().min(3).max(150).optional(),
       description: z.string().min(10).max(1000).optional(),
-      type: notificationTypeEnum.optional(),
+      type: announcementTypeEnum.optional(),
       active: z.boolean().optional(),
       publishedAt: z
         .string()
@@ -71,16 +71,16 @@ export const updateNotificationSchema = z.object({
     }),
 });
 
-export const getNotificationByIdSchema = z.object({
+export const getAnnouncementByIdSchema = z.object({
   params: z.object({
-    id: z.string().cuid({ message: 'Invalid notification id format' }),
+    id: z.string().cuid({ message: 'Invalid announcement id format' }),
   }),
 });
 
-export const notificationFilterSchema = z
+export const announcementFilterSchema = z
   .object({
     title: z.string().optional(),
-    type: notificationTypeEnum.optional(),
+    type: announcementTypeEnum.optional(),
     active: z
       .union([z.boolean(), z.enum(['true', 'false'])])
       .transform((val) => (typeof val === 'string' ? val === 'true' : val))
@@ -88,14 +88,14 @@ export const notificationFilterSchema = z
   })
   .strict();
 
-export const getAllNotificationsSchema = z.object({
+export const getAllAnnouncementsSchema = z.object({
   query: z
     .object({
       filter: z
         .string()
         .optional()
         .transform((value) => parseJson(value))
-        .pipe(notificationFilterSchema)
+        .pipe(announcementFilterSchema)
         .optional(),
 
       pageNo: pageNoValidation,
@@ -104,8 +104,8 @@ export const getAllNotificationsSchema = z.object({
     .strict(),
 });
 
-export const deleteNotificationSchema = z.object({
+export const deleteAnnouncementSchema = z.object({
   params: z.object({
-    id: z.string().cuid({ message: 'Invalid notification id format' }),
+    id: z.string().cuid({ message: 'Invalid announcement id format' }),
   }),
 });

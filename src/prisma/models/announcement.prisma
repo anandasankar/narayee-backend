@@ -1,8 +1,8 @@
-model Notification {
+model Announcement {
     id          String           @id @default(cuid())
     title       String
     description String
-    type        NotificationType
+    type        AnnouncementType
     publishedAt DateTime         @default(now())
     expiresAt   DateTime?
     active      Boolean          @default(true)
@@ -13,7 +13,7 @@ model Notification {
     @@index([active, publishedAt])
 }
 
-enum NotificationType {
+enum AnnouncementType {
     BATCH
     COURSE
     REVIEW

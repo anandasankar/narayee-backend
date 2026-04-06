@@ -1,7 +1,10 @@
-import logger from '../../logger';
-import { BrokerFactory } from '../brokers/BrokerFactory';
-import { USER_CREATED_ROUTING_KEY, UserCreatedEvent } from '../brokers/events/user.publisher.interface';
-import { BROKER_TYPES } from '../types/brokerType';
+import logger from '../../../logger';
+import { BrokerFactory } from '../../brokers/BrokerFactory';
+import {
+  USER_CREATED_ROUTING_KEY,
+  UserCreatedEvent,
+} from '../../brokers/events/user.publisher.interface';
+import { BROKER_TYPES } from '../../types/brokerType';
 
 const broker = BrokerFactory.create(BROKER_TYPES.rabbitmq);
 

@@ -1,10 +1,10 @@
 paths:
-  /notification:
+  /announcement:
     post:
       tags:
-        - Notification
-      summary: Create Notification
-      description: Creates a new notification. Admin only. Optionally schedule a future `publishedAt` and set an `expiresAt`.
+        - Announcement
+      summary: Create Announcement
+      description: Creates a new announcement. Admin only. Optionally schedule a future `publishedAt` and set an `expiresAt`.
 
       security:
         - cookieAuth: []
@@ -45,18 +45,18 @@ paths:
                 publishedAt:
                   type: string
                   format: date-time
-                  description: When the notification becomes visible. Defaults to now if not provided.
+                  description: When the announcement becomes visible. Defaults to now if not provided.
                   example: '2026-03-25T09:00:00.000Z'
 
                 expiresAt:
                   type: string
                   format: date-time
-                  description: When the notification stops being visible. Must be after publishedAt.
+                  description: When the announcement stops being visible. Must be after publishedAt.
                   example: '2026-04-01T23:59:59.000Z'
 
       responses:
         '201':
-          description: Notification created successfully
+          description: Announcement created successfully
           content:
             application/json:
               schema:
@@ -70,7 +70,7 @@ paths:
                     example: 201
                   message:
                     type: string
-                    example: Notification created successfully
+                    example: Announcement created successfully
 
         '400':
           description: Validation error
@@ -142,10 +142,10 @@ paths:
 
     get:
       tags:
-        - Notification
-      summary: Get Active Notifications (Public)
+        - Announcement
+      summary: Get Active Announcements (Public)
       description: >
-        Returns a paginated list of active, published, and non-expired notifications.
+        Returns a paginated list of active, published, and non-expired announcements.
         Publicly accessible — no authentication required.
         Filters: `title` (partial match), `type`.
 
@@ -174,7 +174,7 @@ paths:
 
       responses:
         '200':
-          description: Notifications fetched successfully
+          description: Announcements fetched successfully
           content:
             application/json:
               schema:
@@ -188,7 +188,7 @@ paths:
                     example: 200
                   message:
                     type: string
-                    example: Notifications fetched successfully
+                    example: Announcements fetched successfully
                   data:
                     type: object
                     properties:
@@ -198,7 +198,7 @@ paths:
                       result:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Notification'
+                          $ref: '#/components/schemas/Announcement'
 
         '400':
           description: Invalid query parameters
@@ -214,13 +214,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /notification/admin/all:
+  /announcement/admin/all:
     get:
       tags:
-        - Notification
-      summary: Get All Notifications (Admin)
+        - Announcement
+      summary: Get All Announcements (Admin)
       description: >
-        Returns a paginated list of all non-deleted notifications regardless of active status or expiry.
+        Returns a paginated list of all non-deleted announcements regardless of active status or expiry.
         Supports filtering by `title`, `type`, and `active`.
         Admin only.
 
@@ -254,7 +254,7 @@ paths:
 
       responses:
         '200':
-          description: Notifications fetched successfully
+          description: Announcements fetched successfully
           content:
             application/json:
               schema:
@@ -268,7 +268,7 @@ paths:
                     example: 200
                   message:
                     type: string
-                    example: Notifications fetched successfully
+                    example: Announcements fetched successfully
                   data:
                     type: object
                     properties:
@@ -278,7 +278,7 @@ paths:
                       result:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Notification'
+                          $ref: '#/components/schemas/Announcement'
 
         '400':
           description: Invalid query parameters
@@ -308,12 +308,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /notification/{id}:
+  /announcement/{id}:
     get:
       tags:
-        - Notification
-      summary: Get Notification By ID
-      description: Fetches a single non-deleted notification by its CUID. Admin only.
+        - Announcement
+      summary: Get Announcement By ID
+      description: Fetches a single non-deleted announcement by its CUID. Admin only.
 
       security:
         - cookieAuth: []
@@ -322,14 +322,14 @@ paths:
         - name: id
           in: path
           required: true
-          description: CUID of the notification
+          description: CUID of the announcement
           schema:
             type: string
             example: clx1234abcd5678efgh
 
       responses:
         '200':
-          description: Notification fetched successfully
+          description: Announcement fetched successfully
           content:
             application/json:
               schema:
@@ -343,9 +343,9 @@ paths:
                     example: 200
                   message:
                     type: string
-                    example: Notification fetched successfully
+                    example: Announcement fetched successfully
                   data:
-                    $ref: '#/components/schemas/Notification'
+                    $ref: '#/components/schemas/Announcement'
 
         '400':
           description: Invalid ID format
@@ -369,7 +369,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
         '404':
-          description: Notification not found
+          description: Announcement not found
           content:
             application/json:
               schema:
@@ -383,7 +383,7 @@ paths:
                     example: 404
                   message:
                     type: string
-                    example: Notification not found
+                    example: Announcement not found
 
         '500':
           description: Internal server error
@@ -394,10 +394,10 @@ paths:
 
     put:
       tags:
-        - Notification
-      summary: Update Notification
+        - Announcement
+      summary: Update Announcement
       description: >
-        Updates a notification by ID. Admin only.
+        Updates an announcement by ID. Admin only.
         At least one field must be provided.
         Use `active: false` to deactivate without deleting.
 
@@ -408,7 +408,7 @@ paths:
         - name: id
           in: path
           required: true
-          description: CUID of the notification
+          description: CUID of the announcement
           schema:
             type: string
             example: clx1234abcd5678efgh
@@ -445,7 +445,7 @@ paths:
 
                 active:
                   type: boolean
-                  description: Set to false to deactivate the notification without deleting it.
+                  description: Set to false to deactivate the announcement without deleting it.
                   example: false
 
                 publishedAt:
@@ -460,7 +460,7 @@ paths:
 
       responses:
         '200':
-          description: Notification updated successfully
+          description: Announcement updated successfully
           content:
             application/json:
               schema:
@@ -474,7 +474,7 @@ paths:
                     example: 200
                   message:
                     type: string
-                    example: Notification updated successfully
+                    example: Announcement updated successfully
 
         '400':
           description: Validation error or empty update body
@@ -508,7 +508,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
         '404':
-          description: Notification not found
+          description: Announcement not found
           content:
             application/json:
               schema:
@@ -522,7 +522,7 @@ paths:
                     example: 404
                   message:
                     type: string
-                    example: Notification not found
+                    example: Announcement not found
 
         '500':
           description: Internal server error
@@ -533,9 +533,9 @@ paths:
 
     delete:
       tags:
-        - Notification
-      summary: Delete Notification
-      description: Soft-deletes a notification by ID. The record is retained in the database with `deleted = true`. Admin only.
+        - Announcement
+      summary: Delete Announcement
+      description: Soft-deletes an announcement by ID. The record is retained in the database with `deleted = true`. Admin only.
 
       security:
         - cookieAuth: []
@@ -544,14 +544,14 @@ paths:
         - name: id
           in: path
           required: true
-          description: CUID of the notification
+          description: CUID of the announcement
           schema:
             type: string
             example: clx1234abcd5678efgh
 
       responses:
         '200':
-          description: Notification deleted successfully
+          description: Announcement deleted successfully
           content:
             application/json:
               schema:
@@ -565,7 +565,7 @@ paths:
                     example: 200
                   message:
                     type: string
-                    example: Notification deleted successfully
+                    example: Announcement deleted successfully
 
         '400':
           description: Invalid ID format
@@ -589,7 +589,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
         '404':
-          description: Notification not found
+          description: Announcement not found
           content:
             application/json:
               schema:
@@ -603,7 +603,7 @@ paths:
                     example: 404
                   message:
                     type: string
-                    example: Notification not found
+                    example: Announcement not found
 
         '500':
           description: Internal server error
@@ -614,7 +614,7 @@ paths:
 
 components:
   schemas:
-    Notification:
+    Announcement:
       type: object
       properties:
         id:

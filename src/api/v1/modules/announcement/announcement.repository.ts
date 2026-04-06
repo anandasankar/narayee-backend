@@ -1,16 +1,16 @@
-import { Notification, Prisma } from '@prisma/client';
+import { Announcement, Prisma } from '@prisma/client';
 import { prisma } from '../../../../lib/prisma';
 import { GetAllResponseDTO } from '../../../../types/common.type';
 import { paginationMethod } from '../../../../utils/helper.utils';
 import {
-  CreateNotificationDTO,
-  NotificationFilterDTO,
-  UpdateNotificationDTO,
-} from './notification.interface';
+  AnnouncementFilterDTO,
+  CreateAnnouncementDTO,
+  UpdateAnnouncementDTO,
+} from './announcement.interface';
 
-class NotificationRepository {
-  async createNotification(data: CreateNotificationDTO): Promise<string> {
-    const notification = await prisma.notification.create({
+class AnnouncementRepository {
+  async createAnnouncement(data: CreateAnnouncementDTO): Promise<string> {
+    const announcement = await prisma.announcement.create({
       data: {
         title: data.title,
         description: data.description,
@@ -20,11 +20,11 @@ class NotificationRepository {
       },
     });
 
-    return notification.id;
+    return announcement.id;
   }
 
-  async updateNotification(id: string, data: UpdateNotificationDTO): Promise<void> {
-    await prisma.notification.update({
+  async updateAnnouncement(id: string, data: UpdateAnnouncementDTO): Promise<void> {
+    await prisma.announcement.update({
       where: { id },
       data: {
         title: data.title,
@@ -37,23 +37,23 @@ class NotificationRepository {
     });
   }
 
-  async getNotificationById(id: string): Promise<Notification | null> {
-    return await prisma.notification.findUnique({
+  async getAnnouncementById(id: string): Promise<Announcement | null> {
+    return await prisma.announcement.findUnique({
       where: { id, deleted: false },
     });
   }
 
-  // Admin — sees all non-deleted notifications regardless of active/expiry
-  async getAllNotifications({
+  // Admin — sees all non-deleted announcements regardless of active/expiry
+  async getAllAnnouncements({
     filters = {},
     paginationData,
   }: {
-    filters?: NotificationFilterDTO;
+    filters?: AnnouncementFilterDTO;
     paginationData: { pageNo: number; limit: number };
   }): Promise<GetAllResponseDTO> {
     const pagination = paginationMethod(Number(paginationData.pageNo), Number(paginationData.limit));
 
-    const whereClause: Prisma.NotificationWhereInput = {
+    const whereClause: Prisma.AnnouncementWhereInput = {
       deleted: false,
     };
 
@@ -72,32 +72,32 @@ class NotificationRepository {
       whereClause.active = filters.active;
     }
 
-    const [notifications, count] = await prisma.$transaction([
-      prisma.notification.findMany({
+    const [announcements, count] = await prisma.$transaction([
+      prisma.announcement.findMany({
         where: whereClause,
         skip: pagination.skip,
         take: pagination.take,
         orderBy: { publishedAt: 'desc' },
       }),
-      prisma.notification.count({ where: whereClause }),
+      prisma.announcement.count({ where: whereClause }),
     ]);
 
-    return { count, result: notifications };
+    return { count, result: announcements };
   }
 
-  // Public — only active, non-deleted, non-expired notifications
-  async getActiveNotifications({
+  // Public — only active, non-deleted, non-expired announcements
+  async getActiveAnnouncements({
     filters = {},
     paginationData,
   }: {
-    filters?: NotificationFilterDTO;
+    filters?: AnnouncementFilterDTO;
     paginationData: { pageNo: number; limit: number };
   }): Promise<GetAllResponseDTO> {
     const pagination = paginationMethod(Number(paginationData.pageNo), Number(paginationData.limit));
 
     const now = new Date();
 
-    const whereClause: Prisma.NotificationWhereInput = {
+    const whereClause: Prisma.AnnouncementWhereInput = {
       deleted: false,
       active: true,
       publishedAt: { lte: now },
@@ -115,25 +115,25 @@ class NotificationRepository {
       whereClause.type = filters.type;
     }
 
-    const [notifications, count] = await prisma.$transaction([
-      prisma.notification.findMany({
+    const [announcements, count] = await prisma.$transaction([
+      prisma.announcement.findMany({
         where: whereClause,
         skip: pagination.skip,
         take: pagination.take,
         orderBy: { createdAt: 'desc' },
       }),
-      prisma.notification.count({ where: whereClause }),
+      prisma.announcement.count({ where: whereClause }),
     ]);
 
-    return { count, result: notifications };
+    return { count, result: announcements };
   }
 
-  async deleteNotification(id: string): Promise<void> {
-    await prisma.notification.update({
+  async deleteAnnouncement(id: string): Promise<void> {
+    await prisma.announcement.update({
       where: { id },
       data: { deleted: true },
     });
   }
 }
 
-export const notificationRepository = new NotificationRepository();
+export const announcementRepository = new AnnouncementRepository();
