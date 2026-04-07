@@ -21,7 +21,7 @@
     "prepare": "husky",
     "clean": "rm -rf dist",
     "validate:branch": "tsx scripts/validateBranch.ts",
-    "seed:default": "tsx ./seeds/index.ts"
+    "seed:default": "tsx ./src/seeds/index.ts"
   },
   "keywords": [],
   "author": "",
