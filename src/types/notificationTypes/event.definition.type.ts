@@ -1,4 +1,4 @@
-export enum EventDefinitionCode {
+export enum EventCode {
   USER_CREATED = 'user.created',
   PASSWORD_RESET = 'user.password.reset',
   PAYMENT_SUCCESS = 'payment.success',

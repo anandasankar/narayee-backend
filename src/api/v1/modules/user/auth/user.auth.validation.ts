@@ -32,7 +32,7 @@ const createUserBodySchema = z
     firstName: singleNameValidation,
     middleName: singleNameValidation.optional(),
     lastName: singleNameValidation,
-    email: z.string().trim().email('Invalid email address').optional(),
+    email: z.string().trim().email('Invalid email address'),
     mobileNumber: mobileNumberValidation,
     password: passwordValidation,
     confirmPassword: z.string().min(1, 'Confirm password is required'),

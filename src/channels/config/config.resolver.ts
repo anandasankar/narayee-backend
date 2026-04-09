@@ -1,13 +1,15 @@
-import { TwilioConfig } from '../types/channels.types';
+import { ResendConfig } from '../types/channels.types';
 
 export class ConfigResolver {
-  static getTwilioConfig(): TwilioConfig | null {
-    const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER } = process.env;
-    if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_FROM_NUMBER) return null;
+  static getResendConfig(): ResendConfig | null {
+    const { RESEND_API_KEY, RESEND_FROM_EMAIL, RESEND_FROM_NAME } = process.env;
+
+    if (!RESEND_API_KEY || !RESEND_FROM_EMAIL) return null;
+
     return {
-      accountSid: TWILIO_ACCOUNT_SID,
-      authToken: TWILIO_AUTH_TOKEN,
-      fromNumber: TWILIO_FROM_NUMBER,
+      apiKey: RESEND_API_KEY,
+      fromEmail: RESEND_FROM_EMAIL,
+      fromName: RESEND_FROM_NAME,
     };
   }
 }

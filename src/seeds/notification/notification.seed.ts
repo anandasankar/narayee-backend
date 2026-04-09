@@ -8,8 +8,7 @@ export async function seedNotifications(): Promise<void> {
   for (const notification of allNotifications) {
     const { channels, ...notificationData } = notification;
 
-    // Upsert Notification
-    const existing = await prisma.notification.findFirst({
+    let savedNotification = await prisma.notification.findFirst({
       where: {
         name: notificationData.name,
         eventCode: notificationData.eventCode,
@@ -17,17 +16,21 @@ export async function seedNotifications(): Promise<void> {
       },
     });
 
-    const savedNotification = existing
-      ? existing
-      : await prisma.notification.create({
-          data: notificationData,
-        });
+    if (savedNotification) {
+      savedNotification = await prisma.notification.update({
+        where: { id: savedNotification.id },
+        data: notificationData,
+      });
+    } else {
+      savedNotification = await prisma.notification.create({
+        data: notificationData,
+      });
+    }
 
-    // Upsert Channels + Contents
     for (const ch of channels) {
       const { content, ...channelData } = ch;
 
-      const existingChannel = await prisma.notificationChannel.findFirst({
+      let savedChannel = await prisma.notificationChannel.findFirst({
         where: {
           notificationId: savedNotification.id,
           channel: channelData.channel,
@@ -35,21 +38,30 @@ export async function seedNotifications(): Promise<void> {
         },
       });
 
-      const savedChannel = existingChannel
-        ? existingChannel
-        : await prisma.notificationChannel.create({
-            data: {
-              ...channelData,
-              notificationId: savedNotification.id,
-            },
-          });
+      if (savedChannel) {
+        savedChannel = await prisma.notificationChannel.update({
+          where: { id: savedChannel.id },
+          data: channelData,
+        });
+      } else {
+        savedChannel = await prisma.notificationChannel.create({
+          data: {
+            ...channelData,
+            notificationId: savedNotification.id,
+          },
+        });
+      }
 
-      // Upsert Content
       const existingContent = await prisma.notificationChannelContent.findFirst({
         where: { channelId: savedChannel.id },
       });
 
-      if (!existingContent) {
+      if (existingContent) {
+        await prisma.notificationChannelContent.update({
+          where: { id: existingContent.id },
+          data: content,
+        });
+      } else {
         await prisma.notificationChannelContent.create({
           data: {
             channelId: savedChannel.id,

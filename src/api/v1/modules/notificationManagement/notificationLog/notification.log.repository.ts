@@ -1,5 +1,5 @@
 import { NotificationLog } from '@prisma/client';
-import { prisma } from '../../../../lib/prisma';
+import { prisma } from '../../../../../lib/prisma';
 import { CreateNotificationLogDTO, UpdateNotificationLogDTO } from './notification.log.interface';
 
 class NotificationLogRepository {

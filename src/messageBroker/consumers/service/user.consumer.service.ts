@@ -1,4 +1,6 @@
+import { eventHandler } from '../../../eventHandler/event.handler';
 import logger from '../../../logger';
+import { EventCode } from '../../../types/notificationTypes/event.definition.type';
 import { BrokerFactory } from '../../brokers/BrokerFactory';
 import {
   USER_CREATED_ROUTING_KEY,
@@ -19,22 +21,26 @@ export const userCreatedConsumer = async (): Promise<void> => {
             email: event.payload.email,
           });
 
-          // TODO: your business logic
-          // await emailService.sendWelcome(event.payload)
-          // await notificationService.send(event.payload)
+          await eventHandler.handleEvent(EventCode.USER_CREATED, {
+            type: EventCode.USER_CREATED,
+            userId: event.payload.userId,
+            data: {
+              fullName: event.payload.fullName,
+            },
+          });
         } catch (err) {
-          logger.error(`[Consumer] ❌ Failed to process ${USER_CREATED_ROUTING_KEY}`, {
+          logger.error(`[Consumer] Failed to process ${USER_CREATED_ROUTING_KEY}`, {
             userId: event.payload.userId,
             error: err,
           });
-          throw err; // RabbitMQBroker catches this → nack → DLQ
+          throw err;
         }
       },
       { queueName: USER_CREATED_ROUTING_KEY, durable: true },
     );
 
-    logger.info(`[Consumer] ✅ userCreatedConsumer listening on [${USER_CREATED_ROUTING_KEY}]`);
+    logger.info(`[Consumer] userCreatedConsumer listening on [${USER_CREATED_ROUTING_KEY}]`);
   } catch (err) {
-    logger.error('[Consumer] ❌ Failed to start userCreatedConsumer', err);
+    logger.error('[Consumer] Failed to start userCreatedConsumer', err);
   }
 };

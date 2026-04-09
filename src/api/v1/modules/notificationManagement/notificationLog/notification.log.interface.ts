@@ -16,7 +16,7 @@ export interface CreateNotificationLogDTO {
   subject?: string;
   messageBody?: string;
   status?: MessageStatus;
-  providerId?: string;
+  providerId?: string | null;
   channelType?: ChannelType;
   logType?: NotificationLogType;
   notificationChannelId?: string;
@@ -28,4 +28,8 @@ export interface UpdateNotificationLogDTO {
   attempt?: number;
   sentAt?: Date | null;
   isRead?: boolean;
+}
+
+export interface NotificationLogMetaDataDTO {
+  notificationLogId: string;
 }

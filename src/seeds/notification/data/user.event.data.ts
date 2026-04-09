@@ -1,12 +1,12 @@
 import { ChannelType, RunMode } from '@prisma/client';
-import { EventDefinitionCode } from '../../eventDefinition/event.definition.type';
-import { ProviderCode } from '../../notificationProvider/notification.types';
+import { EventCode } from '../../../types/notificationTypes/event.definition.type';
+import { ProviderCode } from '../../../types/notificationTypes/notification.types';
 
 export const userNotifications = [
   {
     name: 'Welcome Notification',
     runMode: RunMode.SYSTEM,
-    eventCode: EventDefinitionCode.USER_CREATED,
+    eventCode: EventCode.USER_CREATED,
     active: true,
     channels: [
       {
@@ -19,7 +19,7 @@ export const userNotifications = [
           messageHTML: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h2 style="color: #4F46E5;">Welcome to Coderd! 🎉</h2>
-              <p>Hi <strong>{{firstName}}</strong>,</p>
+              <p>Hi <strong>{{fullName}}</strong>,</p>
               <p>We're thrilled to have you with us. Your account has been created successfully.</p>
               <p>Start exploring our courses and kick off your learning journey today.</p>
               <p style="margin-top: 32px; color: #6B7280;">Cheers,<br/>The Coderd Team</p>
@@ -34,7 +34,7 @@ export const userNotifications = [
         content: {
           subject: 'Welcome to Coderd!',
           messageText:
-            'Hi {{firstName}}, your account has been created successfully. Start exploring our courses!',
+            'Hi {{fullName}}, your account has been created successfully. Start exploring our courses!',
           messageHTML: null,
         },
       },

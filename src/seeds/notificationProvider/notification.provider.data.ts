@@ -1,5 +1,5 @@
 import { ChannelType } from '@prisma/client';
-import { ProviderCode } from './notification.types';
+import { ProviderCode } from '../../types/notificationTypes/notification.types';
 
 export const notificationProviders = [
   {
