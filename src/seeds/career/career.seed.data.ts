@@ -1,8 +1,6 @@
 import { CourseLevel } from '@prisma/client';
-import { prisma } from '../src/lib/prisma';
-import logger from '../src/logger';
 
-const careers = [
+export const careers = [
   {
     title: 'Full Stack Developer',
     shortDescription:
@@ -56,17 +54,3 @@ const careers = [
     level: [CourseLevel.INTERMEDIATE],
   },
 ];
-
-export async function seedCareers(): Promise<void> {
-  logger.info('--------------------------Seeding careers...--------------------------');
-
-  for (const career of careers) {
-    await prisma.career.upsert({
-      where: { title: career.title },
-      update: {},
-      create: career,
-    });
-  }
-
-  logger.info(`--------------------------Seeded ${careers.length} careers--------------------------`);
-}

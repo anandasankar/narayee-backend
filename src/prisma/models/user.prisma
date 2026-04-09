@@ -3,7 +3,7 @@ model User {
     firstName         String
     middleName        String?
     lastName          String
-    email             String?   @unique
+    email             String    @unique
     mobileNumber      String    @unique
     password          String
     avatar            String?

@@ -1,5 +1,5 @@
 import logger from '../../logger';
-import { userCreatedConsumer } from './user.consumer.service';
+import { userCreatedConsumer } from './service/user.consumer.service';
 
 export class ConsumerFactory {
   static async runAll(): Promise<void> {

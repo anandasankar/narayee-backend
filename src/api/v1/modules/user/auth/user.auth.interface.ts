@@ -4,7 +4,7 @@ export interface CreateUserDTO {
   firstName: string;
   middleName?: string;
   lastName: string;
-  email?: string;
+  email: string;
   mobileNumber: string;
   password: string;
 }
@@ -29,7 +29,7 @@ export interface GetUserDTO {
   firstName: string;
   middleName?: string | null;
   lastName: string;
-  email?: string | null;
+  email?: string;
   mobileNumber: string;
   avatar?: string | null;
   isEmailVerified: boolean;

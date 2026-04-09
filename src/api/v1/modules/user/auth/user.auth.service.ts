@@ -40,7 +40,7 @@ class UserService {
 
     await onUserCreate({
       userId: user.id,
-      email: user.email ?? null,
+      email: user.email,
       mobileNumber: user.mobileNumber,
       fullName: `${user.firstName} ${user.middleName ?? ''} ${user.lastName}`.trim(),
     });

@@ -1,0 +1,22 @@
+model Announcement {
+    id          String           @id @default(cuid())
+    title       String
+    description String
+    type        AnnouncementType
+    publishedAt DateTime         @default(now())
+    expiresAt   DateTime?
+    active      Boolean          @default(true)
+    deleted     Boolean          @default(false)
+    createdAt   DateTime         @default(now())
+    updatedAt   DateTime         @updatedAt
+
+    @@index([active, publishedAt])
+}
+
+enum AnnouncementType {
+    BATCH
+    COURSE
+    REVIEW
+    SYSTEM
+    OTHER
+}
